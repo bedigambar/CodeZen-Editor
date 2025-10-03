@@ -257,19 +257,6 @@ Have a feature request? [Open an issue](https://github.com/bedigambar/CodeZen-Ed
 
 ---
 
-## 📊 Browser Support
-
-CodeZen works on all modern browsers:
-
-| Browser | Version |
-|---------|---------|
-| Chrome | ✅ Last 2 versions |
-| Firefox | ✅ Last 2 versions |
-| Safari | ✅ Last 2 versions |
-| Edge | ✅ Last 2 versions |
-
----
-
 ## 📄 License
 
 Distributed under the **MIT License**. See `LICENSE` for more information.
