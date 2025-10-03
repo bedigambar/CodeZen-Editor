@@ -30,7 +30,7 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ logs, isVisible, onToggle
   return (
     <div className="w-full">
       {/* Console Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-800/50 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-3 bg-gray-800 border-b border-gray-700">
         <div className="flex items-center gap-3">
           <button
             onClick={onToggle}
