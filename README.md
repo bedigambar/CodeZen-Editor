@@ -85,7 +85,7 @@ Make sure you have the following installed:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/bedigambar/CodeZen-Editor.git
+   git clone https://github.com/bedigambar/CodeZen-Editor
    cd CodeZen-Editor/frontend
    ```
 
