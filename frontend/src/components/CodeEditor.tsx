@@ -205,6 +205,10 @@ const CodeEditor: React.FC = () => {
   }, [isFullscreen]);
 
   const copyToClipboard = (text: string, type: string) => {
+    if (!text || text.trim() === '') {
+      showToast(`No ${type} code to copy. Please write some code first.`, 'error', 'Nothing to Copy!');
+      return;
+    }
     navigator.clipboard.writeText(text).then(
       () => {
         showToast(`${type} code copied successfully!`, 'success', 'Copied!');
@@ -216,6 +220,10 @@ const CodeEditor: React.FC = () => {
   };
 
   const clearAll = () => {
+    if (!htmlCode && !cssCode && !jsCode) {
+      showToast('No code to clear. All code boxes are already empty.', 'error', 'Nothing to Clear!');
+      return;
+    }
     setShowConfirmModal(true);
   };
 
@@ -381,21 +389,37 @@ const CodeEditor: React.FC = () => {
 
       switch (type) {
         case 'html':
+          if (!htmlCode || htmlCode.trim() === '') {
+            showToast('No HTML code to download. Please write some HTML code first.', 'error', 'Nothing to Download!');
+            return;
+          }
           content = htmlCode;
           filename = 'index.html';
           mimeType = 'text/html';
           break;
         case 'css':
+          if (!cssCode || cssCode.trim() === '') {
+            showToast('No CSS code to download. Please write some CSS code first.', 'error', 'Nothing to Download!');
+            return;
+          }
           content = cssCode;
           filename = 'style.css';
           mimeType = 'text/css';
           break;
         case 'js':
+          if (!jsCode || jsCode.trim() === '') {
+            showToast('No JavaScript code to download. Please write some JS code first.', 'error', 'Nothing to Download!');
+            return;
+          }
           content = jsCode;
           filename = 'script.js';
           mimeType = 'text/javascript';
           break;
         case 'all':
+          if (!htmlCode && !cssCode && !jsCode) {
+            showToast('No code to download. Please write some code first in any of the editors.', 'error', 'Nothing to Download!');
+            return;
+          }
           content = `<!DOCTYPE html>
 <html lang="en">
 <head>
