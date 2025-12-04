@@ -214,7 +214,7 @@ frontend/
 
 ## 🤝 Contributing
 
-Contributions make the open-source community amazing! Any contributions you make are **greatly appreciated**.
+Any contributions you make are **greatly appreciated**.
 
 ### **How to Contribute**
 
@@ -259,7 +259,7 @@ Have a feature request? [Open an issue](https://github.com/bedigambar/CodeZen-Ed
 
 ## 📄 License
 
-Distributed under the **MIT License**. See `LICENSE` for more information.
+Distributed under the **MIT License**. See [`LICENSE`](https://github.com/bedigambar/CodeZen-Editor/blob/main/LICENSE) for more information.
 
 This means you can:
 - ✅ Use commercially
