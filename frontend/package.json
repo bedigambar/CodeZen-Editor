@@ -9,8 +9,10 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@uiw/react-codemirror": "^4.21.21",
     "ajv": "^8.17.1",
+    "framer-motion": "^12.23.25",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-parallax-tilt": "^1.7.315",
     "react-router-dom": "^6.16.0"
   },
   "devDependencies": {

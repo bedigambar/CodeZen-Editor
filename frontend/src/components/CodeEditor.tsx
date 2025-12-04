@@ -486,7 +486,7 @@ ${jsCode || '// No JavaScript code provided'}
             <select
               value={currentTheme}
               onChange={(e) => handleThemeChange(e.target.value)}
-              className="appearance-none px-3 py-2 pr-8 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 border border-indigo-400/30 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/50 cursor-pointer shadow-lg hover:shadow-purple-500/25 hover:scale-105"
+              className="appearance-none px-3 py-2 pr-8 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 border border-blue-400/30 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/50 cursor-pointer shadow-lg hover:shadow-cyan-500/25 hover:scale-105"
               title="Change Editor Theme"
               style={{ backgroundImage: 'none', colorScheme: 'dark' }}
             >
@@ -506,22 +506,22 @@ ${jsCode || '// No JavaScript code provided'}
             </div>
           </div>
 
-          <button onClick={formatCode} className="px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Format Code">
+          <button onClick={formatCode} className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Format Code">
             <i className="fa-solid fa-wand-magic-sparkles"></i>
             <span>FORMAT</span>
           </button>
 
-          <button onClick={() => setShowShortcuts(true)} className="px-3 py-2 bg-pink-500/20 hover:bg-pink-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Keyboard Shortcuts">
+          <button onClick={() => setShowShortcuts(true)} className="px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Keyboard Shortcuts">
             <i className="fa-solid fa-keyboard"></i>
             <span>SHORTCUTS</span>
           </button>
 
-          <button onClick={() => setShowTemplates(true)} className="px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Load Template">
+          <button onClick={() => setShowTemplates(true)} className="px-3 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Load Template">
             <i className="fa-solid fa-layer-group"></i>
             <span>TEMPLATES</span>
           </button>
 
-          <button onClick={toggleFullscreen} className="px-3 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Toggle Fullscreen (F11)">
+          <button onClick={toggleFullscreen} className="px-3 py-2 bg-violet-500/20 hover:bg-violet-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Toggle Fullscreen (F11)">
             <i className={`fa-solid ${isFullscreen ? 'fa-compress' : 'fa-expand'}`}></i>
             <span>{isFullscreen ? 'EXIT' : 'FULLSCREEN'}</span>
           </button>
@@ -531,7 +531,7 @@ ${jsCode || '// No JavaScript code provided'}
             <span>CLEAR</span>
           </button>
 
-          <Link to="/" className="px-6 py-2 bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 hover:from-purple-700 hover:via-violet-700 hover:to-fuchsia-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-purple-500/50">
+          <Link to="/" className="px-6 py-2 bg-gradient-to-r from-blue-600 via-cyan-600 to-indigo-600 hover:from-blue-700 hover:via-cyan-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-blue-500/50">
             Go Home
           </Link>
         </div>
@@ -541,7 +541,7 @@ ${jsCode || '// No JavaScript code provided'}
             <select
               value={currentTheme}
               onChange={(e) => handleThemeChange(e.target.value)}
-              className="appearance-none px-2 py-2 pr-7 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 backdrop-blur-sm text-white text-xs font-semibold rounded-lg transition-all duration-200 border border-indigo-400/30 focus:outline-none focus:border-purple-400 cursor-pointer"
+              className="appearance-none px-2 py-2 pr-7 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 backdrop-blur-sm text-white text-xs font-semibold rounded-lg transition-all duration-200 border border-blue-400/30 focus:outline-none focus:border-cyan-400 cursor-pointer"
               title="Change Editor Theme"
               style={{ backgroundImage: 'none', colorScheme: 'dark' }}
             >
@@ -567,7 +567,7 @@ ${jsCode || '// No JavaScript code provided'}
 
           <button
             onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 backdrop-blur-sm text-white text-lg font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+            className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 backdrop-blur-sm text-white text-lg font-semibold rounded-lg transition-all duration-200 hover:scale-105"
             title="Menu"
           >
             <i className={`fa-solid ${showMobileMenu ? 'fa-times' : 'fa-bars'}`}></i>
@@ -576,30 +576,30 @@ ${jsCode || '// No JavaScript code provided'}
 
         {showMobileMenu && (
           <div className="absolute top-full right-0 mt-2 mr-3 sm:mr-4 w-64 bg-gray-900/95 backdrop-blur-lg rounded-lg shadow-2xl border border-white/10 py-2 z-50 animate-scale-in xl:hidden">
-            <button onClick={() => { formatCode(); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-purple-500/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-wand-magic-sparkles text-purple-400"></i>
+            <button onClick={() => { formatCode(); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-blue-500/20 transition-colors flex items-center gap-3">
+              <i className="fa-solid fa-wand-magic-sparkles text-blue-400"></i>
               <span>Format Code</span>
             </button>
 
-            <button onClick={() => { setShowShortcuts(true); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-pink-500/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-keyboard text-pink-400"></i>
+            <button onClick={() => { setShowShortcuts(true); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-cyan-500/20 transition-colors flex items-center gap-3">
+              <i className="fa-solid fa-keyboard text-cyan-400"></i>
               <span>Keyboard Shortcuts</span>
             </button>
 
-            <button onClick={() => { setShowTemplates(true); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-purple-500/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-layer-group text-purple-400"></i>
+            <button onClick={() => { setShowTemplates(true); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-indigo-500/20 transition-colors flex items-center gap-3">
+              <i className="fa-solid fa-layer-group text-indigo-400"></i>
               <span>Templates</span>
             </button>
 
-            <button onClick={() => { toggleFullscreen(); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-indigo-500/20 transition-colors flex items-center gap-3">
-              <i className={`fa-solid ${isFullscreen ? 'fa-compress' : 'fa-expand'} text-indigo-400`}></i>
+            <button onClick={() => { toggleFullscreen(); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-violet-500/20 transition-colors flex items-center gap-3">
+              <i className={`fa-solid ${isFullscreen ? 'fa-compress' : 'fa-expand'} text-violet-400`}></i>
               <span>{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Mode'}</span>
             </button>
 
             <div className="border-t border-white/10 my-2"></div>
 
-            <Link to="/" onClick={() => setShowMobileMenu(false)} className="w-full px-4 py-3 text-left text-white hover:bg-gradient-to-r hover:from-purple-600/20 hover:to-fuchsia-600/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-home text-fuchsia-400"></i>
+            <Link to="/" onClick={() => setShowMobileMenu(false)} className="w-full px-4 py-3 text-left text-white hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-indigo-600/20 transition-colors flex items-center gap-3">
+              <i className="fa-solid fa-home text-indigo-400"></i>
               <span>Go Home</span>
             </Link>
           </div>
@@ -609,7 +609,7 @@ ${jsCode || '// No JavaScript code provided'}
       <main className={`flex-1 flex flex-col items-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in ${isFullscreen ? 'fixed inset-0 z-40 bg-gradient-custom pt-20 overflow-y-auto' : ''}`}>
         <h1 className="text-5xl xs:text-6xl sm:text-7xl md:text-7xl lg:text-8xl font-bold mb-4 sm:mb-5 text-center w-full max-w-full px-2">
           <span className="inline-block relative animate-float">
-            <span className="relative z-10 bg-gradient-to-r from-white via-purple-300 to-pink-300 text-transparent bg-clip-text animate-gradient-shift">
+            <span className="relative z-10 bg-gradient-to-r from-white via-cyan-300 to-blue-500 text-transparent bg-clip-text animate-gradient-shift">
               Build Something Amazing!
             </span>
           </span>
@@ -620,17 +620,18 @@ ${jsCode || '// No JavaScript code provided'}
         <p className="text-sm sm:text-base md:text-base text-gray-300 mb-6 text-center max-w-2xl animate-text-line-2 px-2">
           Export files individually or download your complete project with one click.
         </p>
-        
+
         <div className="mb-6">
           <button
             onClick={() => downloadFile('all')}
-            className="px-8 py-3 bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 hover:from-purple-700 hover:via-violet-700 hover:to-fuchsia-700 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-purple-500/50 flex items-center gap-2"
+            className="px-8 py-3 bg-gradient-to-r from-blue-600 via-cyan-600 to-indigo-600 hover:from-blue-700 hover:via-cyan-700 hover:to-indigo-700 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-blue-500/50 flex items-center gap-2"
           >
             <i className="fa-solid fa-download"></i> Download Complete Project
           </button>
         </div>
 
         <div className="w-full max-w-[95%] xl:max-w-[1600px]">
+
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
             <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl">
               <div className="flex items-center justify-between px-3 sm:px-4 py-3 bg-gray-800/50 border-b border-gray-700">
@@ -832,7 +833,7 @@ ${jsCode || '// No JavaScript code provided'}
         isOpen={showShortcuts}
         onClose={() => setShowShortcuts(false)}
       />
-    </div>
+    </div >
   );
 };
 

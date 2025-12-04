@@ -11,11 +11,11 @@ module.exports = {
       },
       colors: {
         primary: {
-          50: '#f0f0ff',
-          100: '#e0e0ff',
-          500: '#4545dc',
-          600: '#3a3ab8',
-          700: '#2f2f94',
+          50: '#f0f9ff',
+          100: '#e0f2fe',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
         },
       },
       animation: {
