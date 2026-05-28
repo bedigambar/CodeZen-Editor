@@ -59,6 +59,12 @@ const CodeEditor: React.FC = () => {
   const [currentTheme, setCurrentTheme]         = useState<string>('onedark');
   const [consoleLogs, setConsoleLogs]           = useState<ConsoleLog[]>([]);
   const [showConsole, setShowConsole]           = useState<boolean>(false);
+  const [userClosedConsole, setUserClosedConsole] = useState<boolean>(false);
+
+  const handleToggleConsole = () => {
+    setUserClosedConsole(showConsole);
+    setShowConsole(prev => !prev);
+  };
   const [deviceMode, setDeviceMode]             = useState<DeviceMode>('fullwidth');
   const [showMobileMenu, setShowMobileMenu]     = useState<boolean>(false);
   const hasShownWelcomeRef = useRef<boolean>(false);
@@ -106,7 +112,7 @@ const CodeEditor: React.FC = () => {
     const t = setTimeout(() => {
       const hasConsole = jsCode.includes('console.log') || jsCode.includes('console.error')
         || jsCode.includes('console.warn') || jsCode.includes('console.info');
-      if (hasConsole && !showConsole) setShowConsole(true);
+      if (hasConsole && !showConsole && !userClosedConsole) setShowConsole(true);
 
       const combinedCode = `
         <html>
@@ -146,7 +152,7 @@ const CodeEditor: React.FC = () => {
       setOutput(combinedCode);
     }, 250);
     return () => clearTimeout(t);
-  }, [htmlCode, cssCode, jsCode, showConsole]);
+  }, [htmlCode, cssCode, jsCode, showConsole, userClosedConsole]);
 
   /* ── Console messages from iframe ──────────────────────────────────────── */
   useEffect(() => {
@@ -157,12 +163,12 @@ const CodeEditor: React.FC = () => {
           message: event.data.message,
           timestamp: new Date().toLocaleTimeString(),
         }]);
-        if (!showConsole) setShowConsole(true);
+        if (!showConsole && !userClosedConsole) setShowConsole(true);
       }
     };
     window.addEventListener('message', handler);
     return () => window.removeEventListener('message', handler);
-  }, [showConsole]);
+  }, [showConsole, userClosedConsole]);
 
   /* ── Keyboard shortcuts ─────────────────────────────────────────────────── */
   useEffect(() => {
@@ -458,7 +464,7 @@ const CodeEditor: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setShowConsole(v => !v)}
+            onClick={handleToggleConsole}
             id="btn-console"
             style={tbBtn(false, showConsole)}
             onMouseEnter={(e) => { if (!showConsole) { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#3a3a3a'; } }}
@@ -588,7 +594,7 @@ const CodeEditor: React.FC = () => {
             {[
               { icon: 'fa-wand-magic-sparkles', label: 'Format Code',       action: () => { formatCode(); setShowMobileMenu(false); } },
               { icon: 'fa-layer-group',         label: 'Templates',          action: () => { setShowTemplates(true); setShowMobileMenu(false); } },
-              { icon: 'fa-terminal',            label: `${showConsole ? 'Hide' : 'Show'} Console`, action: () => { setShowConsole(v => !v); setShowMobileMenu(false); } },
+              { icon: 'fa-terminal',            label: `${showConsole ? 'Hide' : 'Show'} Console`, action: () => { handleToggleConsole(); setShowMobileMenu(false); } },
               { icon: isFullscreen ? 'fa-compress' : 'fa-expand', label: isFullscreen ? 'Exit Fullscreen' : 'Fullscreen', action: () => { setIsFullscreen(f => !f); setShowMobileMenu(false); } },
             ].map(({ icon, label, action }) => (
               <button
@@ -814,7 +820,7 @@ const CodeEditor: React.FC = () => {
           <ConsoleOutput
             logs={consoleLogs}
             isVisible={showConsole}
-            onToggle={() => setShowConsole(v => !v)}
+            onToggle={handleToggleConsole}
             onClear={() => setConsoleLogs([])}
           />
         </div>
