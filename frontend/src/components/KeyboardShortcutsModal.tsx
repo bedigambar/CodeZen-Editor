@@ -9,57 +9,153 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
   if (!isOpen) return null;
 
   const shortcuts = [
-    { key: 'F11', description: 'Toggle Fullscreen Mode' },
-    { key: 'Esc', description: 'Exit Fullscreen Mode' },
-    { key: '? or Ctrl + /', description: 'Show Keyboard Shortcuts' },
+    { key: 'F11',          description: 'Toggle fullscreen mode' },
+    { key: 'Esc',          description: 'Exit fullscreen mode' },
+    { key: '? / Ctrl + /', description: 'Open this shortcuts panel' },
   ];
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in"
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 50,
+        background: 'rgba(0,0,0,0.75)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px',
+      }}
+      className="animate-fade-in"
       onClick={onClose}
     >
-      <div 
-        className="bg-gray-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in"
+      <div
+        style={{
+          background: '#111',
+          border: '1px solid #2a2a2a',
+          borderRadius: '6px',
+          width: '100%',
+          maxWidth: '480px',
+          overflow: 'hidden',
+          boxShadow: '0 24px 48px rgba(0,0,0,0.8)',
+        }}
+        className="animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">⌨️</span>
-            <h2 className="text-2xl font-bold text-white">Keyboard Shortcuts</h2>
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px',
+            borderBottom: '1px solid #1f1f1f',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <i className="fa-solid fa-keyboard" style={{ color: '#e8ff47', fontSize: '13px' }} />
+            <h2
+              style={{
+                fontFamily: 'Syne, system-ui, sans-serif',
+                fontWeight: 700,
+                fontSize: '15px',
+                color: '#f2f2f2',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Keyboard Shortcuts
+            </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-colors"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#8a8a8a',
+              cursor: 'pointer',
+              padding: '4px 6px',
+              fontSize: '13px',
+              borderRadius: '3px',
+              transition: 'color 0.15s ease',
+            }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#f2f2f2')}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#8a8a8a')}
           >
-            <i className="fa-solid fa-times text-xl"></i>
+            <i className="fa-solid fa-times" />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-          <p className="text-gray-300 mb-6 text-center">
-            Use these keyboard shortcuts to boost your productivity
+        {/* Body */}
+        <div style={{ padding: '20px' }}>
+          <p
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '11px',
+              color: '#8a8a8a',
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
+            Available shortcuts
           </p>
 
-          <div className="space-y-3">
-            {shortcuts.map((shortcut, index) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            {shortcuts.map((s, i) => (
               <div
-                key={index}
-                className="flex items-center justify-between bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-4 hover:border-purple-500 transition-all duration-300"
+                key={i}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 14px',
+                  background: '#0f0f0f',
+                  border: '1px solid #1f1f1f',
+                  borderRadius: '4px',
+                }}
               >
-                <span className="text-gray-300 text-base">{shortcut.description}</span>
-                <kbd className="px-3 py-2 bg-gray-700 text-white rounded-lg font-mono text-sm border border-gray-600 shadow-md">
-                  {shortcut.key}
+                <span
+                  style={{
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '12px',
+                    color: '#a0a0a0',
+                  }}
+                >
+                  {s.description}
+                </span>
+                <kbd
+                  style={{
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '11px',
+                    color: '#e8ff47',
+                    background: '#1a1a00',
+                    border: '1px solid #3a3a00',
+                    borderRadius: '3px',
+                    padding: '3px 8px',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                    marginLeft: '12px',
+                  }}
+                >
+                  {s.key}
                 </kbd>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
-            <p className="text-blue-300 text-sm flex items-center gap-2">
-              <i className="fa-solid fa-info-circle"></i>
-              <span>Press <kbd className="px-2 py-1 bg-gray-700 rounded text-xs">?</kbd> anytime to view this panel</span>
-            </p>
+          {/* Hint */}
+          <div
+            style={{
+              marginTop: '16px',
+              padding: '10px 14px',
+              background: '#0f0f0f',
+              border: '1px solid #1f1f1f',
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <i className="fa-solid fa-circle-info" style={{ color: '#8a8a8a', fontSize: '11px', flexShrink: 0 }} />
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#8a8a8a' }}>
+              Press <kbd style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '2px', padding: '1px 5px', color: '#8a8a8a' }}>?</kbd> anytime to open this panel
+            </span>
           </div>
         </div>
       </div>

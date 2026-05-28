@@ -11,52 +11,180 @@ const TemplatesModal: React.FC<TemplatesModalProps> = ({ isOpen, onClose, onSele
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-      <div className="bg-gray-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in">
-        <div className="bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">🎨</span>
-            <h2 className="text-2xl font-bold text-white">Code Templates</h2>
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 50,
+        background: 'rgba(0,0,0,0.75)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '16px',
+      }}
+      className="animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        style={{
+          background: '#111',
+          border: '1px solid #2a2a2a',
+          borderRadius: '6px',
+          width: '100%',
+          maxWidth: '860px',
+          maxHeight: '90vh',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 24px 48px rgba(0,0,0,0.8)',
+        }}
+        className="animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '14px 20px',
+            borderBottom: '1px solid #1f1f1f',
+            flexShrink: 0,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <i className="fa-solid fa-layer-group" style={{ color: '#e8ff47', fontSize: '13px' }} />
+            <h2
+              style={{
+                fontFamily: 'Syne, system-ui, sans-serif',
+                fontWeight: 700,
+                fontSize: '15px',
+                color: '#f2f2f2',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              Code Templates
+            </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-colors"
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#8a8a8a',
+              cursor: 'pointer',
+              padding: '4px 6px',
+              fontSize: '13px',
+              borderRadius: '3px',
+              transition: 'color 0.15s ease',
+            }}
+            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#f2f2f2')}
+            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = '#8a8a8a')}
           >
-            <i className="fa-solid fa-times text-xl"></i>
+            <i className="fa-solid fa-times" />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-          <p className="text-gray-300 mb-6 text-center">
-            Choose a template to get started quickly. Your current code will be replaced.
+        {/* Sub-header hint */}
+        <div style={{ padding: '10px 20px', borderBottom: '1px solid #1a1a1a', flexShrink: 0 }}>
+          <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#8a8a8a' }}>
+            Select a template (your current code will be replaced).
           </p>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {templates.map((template) => (
-              <div
-                key={template.id}
-                className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-xl p-5 hover:border-purple-500 transition-all duration-300 cursor-pointer group hover:scale-105"
-                onClick={() => onSelectTemplate(template)}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-white font-bold text-lg group-hover:text-purple-400 transition-colors">
-                    {template.name}
-                  </h3>
-                  <span className="text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full">
-                    {template.category}
-                  </span>
-                </div>
-                <p className="text-gray-400 text-sm mb-4">
-                  {template.description}
-                </p>
-                <div className="flex gap-2 text-xs text-gray-500">
-                  {template.html && <span className="bg-orange-500/20 text-orange-300 px-2 py-1 rounded">HTML</span>}
-                  {template.css && <span className="bg-blue-500/20 text-blue-300 px-2 py-1 rounded">CSS</span>}
-                  {template.js && <span className="bg-yellow-500/20 text-yellow-300 px-2 py-1 rounded">JS</span>}
-                </div>
+        {/* Grid */}
+        <div
+          style={{
+            padding: '16px 20px 20px',
+            overflowY: 'auto',
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: '8px',
+          }}
+        >
+          {templates.map((template) => (
+            <div
+              key={template.id}
+              onClick={() => onSelectTemplate(template)}
+              style={{
+                background: '#0f0f0f',
+                border: '1px solid #1f1f1f',
+                borderRadius: '4px',
+                padding: '14px',
+                cursor: 'pointer',
+                transition: 'border-color 0.15s ease, background 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.borderColor = '#e8ff47';
+                (e.currentTarget as HTMLDivElement).style.background = '#141400';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.borderColor = '#1f1f1f';
+                (e.currentTarget as HTMLDivElement).style.background = '#0f0f0f';
+              }}
+            >
+              {/* Title row */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
+                <h3
+                  style={{
+                    fontFamily: 'Syne, system-ui, sans-serif',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                    color: '#f2f2f2',
+                    letterSpacing: '-0.01em',
+                    lineHeight: 1.3,
+                  }}
+                >
+                  {template.name}
+                </h3>
+                <span
+                  style={{
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '9px',
+                    color: '#8a8a8a',
+                    background: '#1a1a1a',
+                    border: '1px solid #2a2a2a',
+                    borderRadius: '2px',
+                    padding: '2px 6px',
+                    whiteSpace: 'nowrap',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    flexShrink: 0,
+                  }}
+                >
+                  {template.category}
+                </span>
               </div>
-            ))}
-          </div>
+
+              {/* Description */}
+              <p
+                style={{
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '11px',
+                  color: '#8a8a8a',
+                  lineHeight: 1.5,
+                  marginBottom: '10px',
+                }}
+              >
+                {template.description}
+              </p>
+
+              {/* Lang tags */}
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {template.html && (
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: '#e34c26', background: 'rgba(227,76,38,0.1)', border: '1px solid rgba(227,76,38,0.2)', borderRadius: '2px', padding: '2px 6px' }}>
+                    HTML
+                  </span>
+                )}
+                {template.css && (
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: '#264de4', background: 'rgba(38,77,228,0.1)', border: '1px solid rgba(38,77,228,0.2)', borderRadius: '2px', padding: '2px 6px' }}>
+                    CSS
+                  </span>
+                )}
+                {template.js && (
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: '#c8a600', background: 'rgba(247,223,30,0.08)', border: '1px solid rgba(247,223,30,0.15)', borderRadius: '2px', padding: '2px 6px' }}>
+                    JS
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

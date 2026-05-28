@@ -1,295 +1,116 @@
-# 🎨 CodeZen - Modern Online Code Editor
+# CodeZen — Minimalist Browser-Based Code Editor
 
-<div align="center">
+CodeZen is a sleek, minimal online code editor designed for developers, students, and prototyping. Built with React 18, TypeScript, and CodeMirror 6, it features a confidence-driven, dark editorial developer-tool aesthetic inspired by modern tools like Linear and Vercel. 
 
-![CodeZen Banner](https://img.shields.io/badge/CodeZen-Online_Code_Editor-blueviolet?style=for-the-badge)
-
-**A sleek, feature-rich online code editor for HTML, CSS, and JavaScript with real-time preview**
-
-[![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-success?style=for-the-badge)](https://code-zen-editor.vercel.app)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/bedigambar/CodeZen-Editor)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
-
-**[✨ View Live Demo](https://code-zen-editor.vercel.app)** • **[📝 Documentation](#-features)** • **[🐛 Report Bug](https://github.com/bedigambar/CodeZen-Editor/issues)** • **[💡 Request Feature](https://github.com/bedigambar/CodeZen-Editor/issues)**
-
-</div>
+The editor combines syntax highlighting, real-time live preview, responsive device emulation, and a built-in terminal console into a distraction-free single-page interface.
 
 ---
 
-## 📖 About The Project
+## Technical Features
 
-CodeZen is a powerful, browser-based code editor designed for developers, students, and coding enthusiasts. Write HTML, CSS, and JavaScript code with syntax highlighting, see live previews instantly, and test your responsive designs across different device sizes—all in one place!
+### Core Capabilities
+* **Live Code Editing** — Standalone editors for HTML, CSS, and JavaScript with syntax highlighting powered by CodeMirror 6.
+* **Instant Preview** — Auto-updates the running preview frame as you type with debounced performance.
+* **Built-in Console Terminal** — Debug JavaScript directly on-page; captures `console.log`, `console.warn`, `console.error`, and `console.info` in a custom monospace terminal panel.
+* **Responsive Emulation** — View output inside a simulated window frame at Mobile (375px), Tablet (768px), Desktop (1200px), or Full-width layouts.
+* **Intelligent Auto-Save** — Persists your working state locally via browser storage to prevent accidental data loss.
 
-Perfect for:
-- 🎓 **Learning** - Students practicing web development
-- 🚀 **Prototyping** - Quick UI/UX experiments
-- 🎨 **Design Testing** - Testing responsive layouts
-- 💻 **Code Sharing** - Demonstrating code snippets
-- 🔧 **Debugging** - Testing JavaScript with built-in console
+### Design System & Theme config
+* **Editorial Typography** — Set in Syne for headings/tabs and JetBrains Mono for code, buttons, and console outputs.
+* **High Contrast / High Legibility** — Deep backgrounds (`#0d0d0d`/`#111`), subtle clean borders (`#1f1f1f`/`#2a2a2a`), with a single bright highlight in acid yellow (`#e8ff47`) and danger states in solid red (`#ff5555`).
+* **5 Editor Themes** — Toggle between One Dark, VSCode Dark, Dracula, Monokai, and GitHub Light.
+* **Refined Micro-interactions** — Smooth transitions, hover border enhancements, and clean, scale-in animations replace bounce effects.
 
----
-
-## ✨ Features
-
-### 🎯 **Core Functionality**
-- **✍️ Live Code Editing** - Write HTML, CSS, and JavaScript with intelligent syntax highlighting
-- **⚡ Real-Time Preview** - See your changes instantly as you type (250ms debounce)
-- **🖥️ Built-in Console** - Debug JavaScript with console.log, console.error, console.warn, and console.info
-- **📱 Responsive Testing** - Preview on Mobile (375px), Tablet (768px), Desktop (1440px), or Full Width
-- **💾 Auto-Save** - Your work is automatically saved to localStorage—never lose your progress
-- **⚡ Fast Performance** - Optimized rendering with React 18 and TypeScript
-
-### 🎨 **Themes & Customization**
-Choose from **5 beautiful editor themes**:
-- 🌙 **One Dark** (Default)
-- 🌑 **VSCode Dark**
-- 🧛 **Dracula**
-- 🎭 **Monokai**
-- ☀️ **GitHub Light**
-
-Themes persist across sessions for a personalized experience!
-
-### 📚 **Ready-to-Use Templates**
-Jumpstart your coding with professional templates:
-- 🏠 **Landing Page** - Modern hero section with features
-- 👤 **Profile Card** - Animated user card component
-- 🧭 **Navigation Bar** - Responsive navbar with mobile menu
-- ✅ **Todo List** - Interactive task manager app
-- 🎨 **Animated Buttons** - Collection of stunning button styles
-
-### 🛠️ **Developer Tools**
-- **✨ Auto-Format** - Clean up your code with intelligent formatting
-- **📋 Copy to Clipboard** - Quick copy for HTML, CSS, or JavaScript
-- **📥 Download Files** - Export individual files (HTML/CSS/JS) or complete project
-- **⌨️ Keyboard Shortcuts** - Boost productivity with shortcuts (F11 for fullscreen, ? for help)
-- **🖼️ Fullscreen Mode** - Distraction-free coding experience
-- **🔔 Toast Notifications** - User-friendly feedback for all actions
-
-### 📱 **Responsive Design**
-- ✅ Fully optimized for mobile (375px), tablet (1024px), and desktop
-- ✅ Mobile-first approach with touch-friendly interface
-- ✅ Adaptive UI elements that adjust to screen size
-- ✅ Icon-only buttons on small screens for better space utilization
+### Utility Actions
+* **Intelligent Auto-Format** — Pretty-prints your current HTML, CSS, and JS code in one click.
+* **Template Library** — Select and load boilerplate structures (Landing Page, Profile Card, Navigation Bar, Todo List, Animated Buttons).
+* **Export Options** — Download individual `.html`, `.css`, or `.js` source files, or export a single self-contained HTML file containing all assets.
+* **Keyboard Shortcuts** — Maximize productivity with quick keys:
+  * `F11` — Toggle Fullscreen Mode
+  * `Esc` — Exit Fullscreen Mode
+  * `?` or `Ctrl + /` — Open Keyboard Shortcuts Guide
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-Make sure you have the following installed:
-- **Node.js** (v14.0 or higher)
-- **npm** or **yarn**
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/bedigambar/CodeZen-Editor
-   cd CodeZen-Editor/frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start the development server**
-   ```bash
-   npm start
-   ```
-
-4. **Open in your browser**
-   ```
-   http://localhost:3000
-   ```
-
-   The app will automatically reload when you make changes!
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-Creates an optimized production build in the `build/` folder, ready for deployment.
-
----
-
-## 🎯 How to Use
-
-### **Basic Workflow**
-
-1. **✍️ Write Your Code**
-   - Type HTML in the left editor
-   - Add CSS styling in the middle editor
-   - Add JavaScript functionality in the right editor
-
-2. **👀 Live Preview**
-   - Your code renders in real-time in the preview pane below
-   - Changes appear instantly as you type
-
-3. **🐛 Debug with Console**
-   - Open the console panel to see JavaScript logs
-   - View errors, warnings, and info messages
-   - Console automatically opens when you use console methods
-
-4. **📱 Test Responsiveness**
-   - Click device buttons to switch between Mobile, Tablet, Desktop, or Full Width views
-   - Perfect for testing responsive designs!
-
-5. **💾 Save & Download**
-   - Code auto-saves to your browser's localStorage
-   - Download individual files or a complete HTML file with embedded CSS/JS
-   - Copy code to clipboard with one click
-
-### **Keyboard Shortcuts**
-
-| Shortcut | Action |
-|----------|--------|
-| `F11` | Toggle fullscreen mode |
-| `Esc` | Exit fullscreen mode |
-| `?` or `Ctrl + /` | Show keyboard shortcuts help |
-
-### **Using Templates**
-
-1. Click the **"TEMPLATES"** button in the navbar
-2. Browse available templates
-3. Click on any template to load it instantly
-4. Customize the code to your needs!
-
----
-
-## 🏗️ Tech Stack
-
-### **Frontend**
-- **[React 18.2](https://reactjs.org/)** - UI library with latest features
-- **[TypeScript 4.9](https://www.typescriptlang.org/)** - Type-safe development
-- **[CodeMirror 6](https://codemirror.net/)** - Professional code editor component
-- **[Tailwind CSS 3.4](https://tailwindcss.com/)** - Utility-first styling
-- **[React Router 6.16](https://reactrouter.com/)** - Client-side routing
-
-### **Development Tools**
-- **ESLint** - Code quality and consistency
-- **PostCSS** - CSS processing
-- **Autoprefixer** - Automatic vendor prefixes
-
----
-
-## 📁 Project Structure
+## Directory Layout
 
 ```
 frontend/
 ├── public/
 │   ├── assets/
-│   │   ├── logo.png              # Main logo
+│   │   ├── logo.png              # Brand logo
 │   │   └── uplogo.png            # Favicon
-│   ├── index.html                # HTML template
-│   └── manifest.json             # PWA manifest
+│   ├── index.html                # App entry HTML template
+│   └── manifest.json             # PWA metadata configuration
 ├── src/
 │   ├── components/
-│   │   ├── CodeEditor.tsx        # Main editor component
-│   │   ├── Home.tsx              # Landing page
-│   │   ├── ConsoleOutput.tsx     # JavaScript console
-│   │   ├── ResponsivePreview.tsx # Device preview modes
-│   │   ├── TemplatesModal.tsx    # Template selector
-│   │   ├── ConfirmModal.tsx      # Confirmation dialogs
-│   │   ├── KeyboardShortcutsModal.tsx  # Shortcuts help
-│   │   └── Toast.tsx             # Notification system
+│   │   ├── CodeEditor.tsx        # Central code editor layout
+│   │   ├── Home.tsx              # Minimalist landing page
+│   │   ├── ConsoleOutput.tsx     # Custom monospace console terminal
+│   │   ├── ResponsivePreview.tsx # Device preview frame simulator
+│   │   ├── TemplatesModal.tsx    # Code templates panel
+│   │   ├── ConfirmModal.tsx      # Warning confirmation modal
+│   │   ├── KeyboardShortcutsModal.tsx  # Shortcuts cheat sheet
+│   │   └── Toast.tsx             # Clean toast notification system
 │   ├── data/
-│   │   ├── templates.ts          # Code templates data
-│   │   └── themes.ts             # Editor theme configs
+│   │   ├── templates.ts          # Boilerplate code templates
+│   │   └── themes.ts             # Editor color themes configs
 │   ├── types/
 │   │   └── index.ts              # TypeScript interfaces
-│   ├── App.tsx                   # Root component
-│   ├── index.tsx                 # App entry point
-│   └── index.css                 # Global styles + Tailwind
-├── package.json                  # Dependencies
-├── tsconfig.json                 # TypeScript config
-├── tailwind.config.js            # Tailwind config
-└── README.md                     # Documentation
+│   ├── App.tsx                   # Core React router config
+│   ├── index.tsx                 # React DOM mount entrypoint
+│   └── index.css                 # CSS layout imports & Tailwind rules
+├── package.json                  # Dependencies manifest
+├── tsconfig.json                 # TypeScript compiler configuration
+└── tailwind.config.js            # Design tokens & animation definitions
 ```
 
 ---
 
-## 🤝 Contributing
+## Tech Stack
+* **Framework:** React 18
+* **Language:** TypeScript 4.9
+* **Editor Core:** CodeMirror 6
+* **CSS Framework:** Tailwind CSS 3.4
+* **Icons:** FontAwesome 6
 
-Any contributions you make are **greatly appreciated**.
+---
 
-### **How to Contribute**
+## Getting Started
 
-1. **Fork the Project**
-2. **Create your Feature Branch**
+### Installation
+
+1. **Clone the repository and go to the frontend directory**
    ```bash
-   git checkout -b feature/AmazingFeature
+   git clone https://github.com/bedigambar/CodeZen-Editor
+   cd CodeZen-Editor/frontend
    ```
-3. **Commit your Changes**
+
+2. **Install node package dependencies**
    ```bash
-   git commit -m 'Add some AmazingFeature'
+   npm install
    ```
-4. **Push to the Branch**
+
+3. **Start the local development server**
    ```bash
-   git push origin feature/AmazingFeature
+   npm start
    ```
-5. **Open a Pull Request**
 
-### **Code of Conduct**
+4. **Open your browser to preview**
+   ```
+   http://localhost:3000
+   ```
 
-Please be respectful and constructive. We're all here to learn and build together! 💙
+### Production Build
 
----
-
-## 🗺️ Roadmap
-
-### **Coming Soon**
-- [ ] 🔐 User authentication (login/signup)
-- [ ] ☁️ Cloud storage for projects
-- [ ] 🔗 Share projects with unique URLs
-- [ ] 👥 Real-time collaboration
-- [ ] 📚 Personal code snippets library
-- [ ] 🎨 More framework support (React, Vue, Svelte)
-- [ ] 🌙 App-wide dark/light mode toggle
-- [ ] 📦 Import from GitHub Gist
-- [ ] 🔄 Export to CodePen/JSFiddle
-- [ ] ⚙️ Custom keyboard shortcut configuration
-
-Have a feature request? [Open an issue](https://github.com/bedigambar/CodeZen-Editor/issues)!
+Compile a minified production build:
+```bash
+npm run build
+```
+The optimized bundle will be generated under the `build/` folder.
 
 ---
 
-## 📄 License
+## License
 
-Distributed under the **MIT License**. See [`LICENSE`](https://github.com/bedigambar/CodeZen-Editor/blob/main/LICENSE) for more information.
-
-This means you can:
-- ✅ Use commercially
-- ✅ Modify
-- ✅ Distribute
-- ✅ Use privately
-
----
-
-
-## 🙏 Acknowledgments
-
-Special thanks to these amazing projects and resources:
-
-- [CodeMirror](https://codemirror.net/) - Powerful code editor component
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [Font Awesome](https://fontawesome.com/) - Beautiful icon library
-- [Vercel](https://vercel.com/) - Seamless deployment platform
-- [React](https://reactjs.org/) - The UI library that powers CodeZen
-- [TypeScript](https://www.typescriptlang.org/) - Type safety and better DX
-- [Animated Fluent Emojis](https://github.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis) - Fun emoji icons
-
----
-
-<div align="center">
-
-### **Made with ❤️ by [Digambar](https://github.com/bedigambar)**
-
-⭐ **Star this repo if you found it helpful!**
-
-**[↑ Back to Top](#-codezen---modern-online-code-editor)**
-
-</div>
+Distributed under the MIT License. See [LICENSE](https://github.com/bedigambar/CodeZen-Editor/blob/main/LICENSE) for details.

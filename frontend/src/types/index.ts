@@ -19,7 +19,6 @@ export interface ConfirmModalProps {
   message: string;
   confirmText: string;
   cancelText: string;
-  icon: string;
 }
 
 export type FileType = 'html' | 'css' | 'js' | 'all';

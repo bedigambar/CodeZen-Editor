@@ -9,9 +9,9 @@ interface ResponsivePreviewProps {
 }
 
 const deviceSizes = {
-  mobile: { width: 375, height: 667, icon: 'fa-mobile-screen' },
-  tablet: { width: 768, height: 1024, icon: 'fa-tablet-screen-button' },
-  desktop: { width: 1440, height: 900, icon: 'fa-desktop' },
+  mobile: { width: 375, height: 600, icon: 'fa-mobile-screen' },
+  tablet: { width: 768, height: 900, icon: 'fa-tablet-screen-button' },
+  desktop: { width: 1200, height: 750, icon: 'fa-desktop' },
   fullwidth: { width: '100%', height: 500, icon: 'fa-expand' },
 };
 
@@ -22,54 +22,138 @@ const ResponsivePreview: React.FC<ResponsivePreviewProps> = ({
 }) => {
   const currentDevice = deviceSizes[deviceMode];
 
+  const devBtnStyle = (active: boolean): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '4px 10px',
+    background: active ? 'rgba(232, 255, 71, 0.08)' : 'transparent',
+    border: `1px solid ${active ? 'rgba(232, 255, 71, 0.3)' : '#1f1f1f'}`,
+    borderRadius: '3px',
+    color: active ? '#e8ff47' : '#8a8a8a',
+    fontFamily: 'JetBrains Mono, monospace',
+    fontSize: '10px',
+    fontWeight: 500,
+    textTransform: 'uppercase',
+    letterSpacing: '0.04em',
+    cursor: 'pointer',
+    transition: 'color 0.15s ease, border-color 0.15s ease, background 0.15s ease',
+  });
+
   return (
-    <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl">
-      <div className="flex items-center justify-between px-4 py-3 bg-gray-800/50 border-b border-gray-700">
-        <div className="flex items-center gap-2 text-white font-semibold">
-          <i className="fa-solid fa-eye"></i>
-          <span>Live Preview</span>
+    <div
+      style={{
+        width: '100%',
+        background: '#111',
+        border: '1px solid #2a2a2a',
+        borderRadius: '4px',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 12px',
+          height: '38px',
+          background: '#0f0f0f',
+          borderBottom: '1px solid #1f1f1f',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00d9aa', display: 'inline-block', flexShrink: 0 }} />
+          <span
+            style={{
+              fontFamily: 'Syne, system-ui, sans-serif',
+              fontSize: '11px',
+              fontWeight: 600,
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+              color: '#f2f2f2',
+            }}
+          >
+            Live Preview
+          </span>
         </div>
-        
-        <div className="flex items-center gap-2">
+
+        {/* Device select buttons */}
+        <div style={{ display: 'flex', gap: '4px' }}>
           {(Object.keys(deviceSizes) as DeviceMode[]).map((mode) => (
             <button
               key={mode}
               onClick={() => onDeviceModeChange(mode)}
-              className={`px-3 py-2 rounded-lg transition-all duration-200 ${
-                deviceMode === mode
-                  ? 'bg-primary-500 text-white'
-                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-              }`}
+              style={devBtnStyle(deviceMode === mode)}
+              onMouseEnter={(e) => {
+                if (deviceMode !== mode) {
+                  e.currentTarget.style.color = '#f2f2f2';
+                  e.currentTarget.style.borderColor = '#3a3a3a';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (deviceMode !== mode) {
+                  e.currentTarget.style.color = '#8a8a8a';
+                  e.currentTarget.style.borderColor = '#1f1f1f';
+                }
+              }}
               title={mode.charAt(0).toUpperCase() + mode.slice(1)}
             >
-              <i className={`fa-solid ${deviceSizes[mode].icon}`}></i>
-              <span className="ml-2 hidden md:inline capitalize">{mode}</span>
+              <i className={`fa-solid ${deviceSizes[mode].icon}`} style={{ fontSize: '10px' }} />
+              <span className="hidden md:inline">{mode}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="bg-gray-800 p-6 flex justify-center items-start min-h-[500px]">
+      {/* Frame wrapper */}
+      <div
+        style={{
+          background: '#0d0d0d',
+          padding: deviceMode !== 'fullwidth' ? '24px' : '0',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          minHeight: '500px',
+          overflowX: 'auto',
+        }}
+      >
         <div
-          className={`${
-            deviceMode === 'fullwidth' ? 'w-full' : ''
-          } transition-all duration-300 ${
-            deviceMode !== 'fullwidth' ? 'shadow-2xl border-8 border-gray-900 rounded-lg' : ''
-          }`}
           style={{
             width: deviceMode !== 'fullwidth' ? `${currentDevice.width}px` : '100%',
-            maxWidth: '100%',
+            maxWidth: deviceMode !== 'fullwidth' ? 'none' : '100%',
+            background: '#111',
+            border: deviceMode !== 'fullwidth' ? '1px solid #2a2a2a' : 'none',
+            borderRadius: deviceMode !== 'fullwidth' ? '6px' : '0',
+            overflow: 'hidden',
+            boxShadow: deviceMode !== 'fullwidth' ? '0 12px 32px rgba(0,0,0,0.5)' : 'none',
+            transition: 'width 0.25s ease, height 0.25s ease',
           }}
         >
           {deviceMode !== 'fullwidth' && (
-            <div className="bg-gray-900 px-4 py-2 flex items-center gap-2 text-xs text-gray-400">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <div
+              style={{
+                background: '#0f0f0f',
+                borderBottom: '1px solid #1f1f1f',
+                padding: '6px 12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#ff5f57', display: 'inline-block' }} />
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#febc2e', display: 'inline-block' }} />
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#28c840', display: 'inline-block' }} />
               </div>
-              <span className="ml-2">
-                {currentDevice.width} x {currentDevice.height}
+              <span
+                style={{
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '10px',
+                  color: '#8a8a8a',
+                }}
+              >
+                {currentDevice.width} × {currentDevice.height}
               </span>
             </div>
           )}
@@ -77,9 +161,13 @@ const ResponsivePreview: React.FC<ResponsivePreviewProps> = ({
             srcDoc={output}
             title="output"
             sandbox="allow-scripts"
-            className="w-full bg-white"
+            className="w-full"
             style={{
               height: deviceMode !== 'fullwidth' ? `${currentDevice.height}px` : '500px',
+              border: 'none',
+              display: 'block',
+              background: '#18181b',
+              transition: 'height 0.25s ease',
             }}
           />
         </div>

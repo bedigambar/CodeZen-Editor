@@ -14,146 +14,130 @@ import { Template } from '../data/templates';
 import { themes, getThemeById } from '../data/themes';
 import { FileType } from '../types';
 
+/* ─── Storage keys ─────────────────────────────────────────────────────────── */
 const STORAGE_KEYS = {
-  HTML: 'codezen_html',
-  CSS: 'codezen_css',
-  JS: 'codezen_js',
+  HTML:  'codezen_html',
+  CSS:   'codezen_css',
+  JS:    'codezen_js',
   THEME: 'codezen_theme',
 };
 
+/* ─── Types ────────────────────────────────────────────────────────────────── */
 interface ConsoleLog {
   type: 'log' | 'error' | 'warn' | 'info';
   message: string;
   timestamp: string;
 }
 
+/* ─── Theme swatch colors (one per theme id, in order) ─────────────────────── */
+const SWATCH_COLORS: Record<string, string> = {
+  'onedark':      '#282c34',
+  'vscode-dark':  '#1e1e1e',
+  'dracula':      '#282a36',
+  'monokai':      '#272822',
+  'github-light': '#ffffff',
+};
+
+/* ─── Panel header dot color per language ───────────────────────────────────── */
+const LANG_DOT: Record<string, string> = {
+  html: '#e34c26',
+  css:  '#264de4',
+  js:   '#f7df1e',
+};
+
+/* ─── Component ────────────────────────────────────────────────────────────── */
 const CodeEditor: React.FC = () => {
-  const [htmlCode, setHtmlCode] = useState<string>('');
-  const [cssCode, setCssCode] = useState<string>('');
-  const [jsCode, setJsCode] = useState<string>('');
-  const [output, setOutput] = useState<string>('');
+  const [htmlCode, setHtmlCode]         = useState<string>('');
+  const [cssCode, setCssCode]           = useState<string>('');
+  const [jsCode, setJsCode]             = useState<string>('');
+  const [output, setOutput]             = useState<string>('');
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [showTemplates, setShowTemplates] = useState<boolean>(false);
-  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
-  const [lastSaved, setLastSaved] = useState<string>('');
-  const [showShortcuts, setShowShortcuts] = useState<boolean>(false);
-  const [currentTheme, setCurrentTheme] = useState<string>('onedark');
-  const [consoleLogs, setConsoleLogs] = useState<ConsoleLog[]>([]);
-  const [showConsole, setShowConsole] = useState<boolean>(false);
-  const [deviceMode, setDeviceMode] = useState<DeviceMode>('fullwidth');
-  const [showMobileMenu, setShowMobileMenu] = useState<boolean>(false);
+  const [showTemplates, setShowTemplates]       = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen]         = useState<boolean>(false);
+  const [lastSaved, setLastSaved]               = useState<string>('');
+  const [showShortcuts, setShowShortcuts]       = useState<boolean>(false);
+  const [currentTheme, setCurrentTheme]         = useState<string>('onedark');
+  const [consoleLogs, setConsoleLogs]           = useState<ConsoleLog[]>([]);
+  const [showConsole, setShowConsole]           = useState<boolean>(false);
+  const [deviceMode, setDeviceMode]             = useState<DeviceMode>('fullwidth');
+  const [showMobileMenu, setShowMobileMenu]     = useState<boolean>(false);
   const hasShownWelcomeRef = useRef<boolean>(false);
   const { showToast } = useToast();
 
+  /* ── Page title SEO ────────────────────────────────────────────────────── */
   useEffect(() => {
-    const savedHtml = localStorage.getItem(STORAGE_KEYS.HTML);
-    const savedCss = localStorage.getItem(STORAGE_KEYS.CSS);
-    const savedJs = localStorage.getItem(STORAGE_KEYS.JS);
+    document.title = "CodeZen Editor — Write, Preview, and Ship Web Code";
+  }, []);
+
+  /* ── Restore from localStorage ─────────────────────────────────────────── */
+  useEffect(() => {
+    const savedHtml  = localStorage.getItem(STORAGE_KEYS.HTML);
+    const savedCss   = localStorage.getItem(STORAGE_KEYS.CSS);
+    const savedJs    = localStorage.getItem(STORAGE_KEYS.JS);
     const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || 'onedark';
 
     if (savedHtml) setHtmlCode(savedHtml);
-    if (savedCss) setCssCode(savedCss);
-    if (savedJs) setJsCode(savedJs);
+    if (savedCss)  setCssCode(savedCss);
+    if (savedJs)   setJsCode(savedJs);
     setCurrentTheme(savedTheme);
 
     if ((savedHtml || savedCss || savedJs) && !hasShownWelcomeRef.current) {
       hasShownWelcomeRef.current = true;
       setLastSaved('Restored from previous session');
-      showToast('Previous session restored successfully!', 'success', 'Welcome Back! 👋');
+      showToast('Previous session restored.', 'success', 'Welcome back');
     }
   }, [showToast]);
 
+  /* ── Auto-save ─────────────────────────────────────────────────────────── */
   useEffect(() => {
-    const saveTimeout = setTimeout(() => {
+    const t = setTimeout(() => {
       localStorage.setItem(STORAGE_KEYS.HTML, htmlCode);
-      localStorage.setItem(STORAGE_KEYS.CSS, cssCode);
-      localStorage.setItem(STORAGE_KEYS.JS, jsCode);
-
+      localStorage.setItem(STORAGE_KEYS.CSS,  cssCode);
+      localStorage.setItem(STORAGE_KEYS.JS,   jsCode);
       if (htmlCode || cssCode || jsCode) {
-        const now = new Date().toLocaleTimeString();
-        setLastSaved(`Auto-saved at ${now}`);
+        setLastSaved(`Saved ${new Date().toLocaleTimeString()}`);
       }
     }, 1000);
-
-    return () => clearTimeout(saveTimeout);
+    return () => clearTimeout(t);
   }, [htmlCode, cssCode, jsCode]);
 
+  /* ── Live preview ──────────────────────────────────────────────────────── */
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      const hasConsoleUsage = jsCode.includes('console.log') ||
-        jsCode.includes('console.error') ||
-        jsCode.includes('console.warn') ||
-        jsCode.includes('console.info');
-      if (hasConsoleUsage && !showConsole) {
-        setShowConsole(true);
-      }
+    const t = setTimeout(() => {
+      const hasConsole = jsCode.includes('console.log') || jsCode.includes('console.error')
+        || jsCode.includes('console.warn') || jsCode.includes('console.info');
+      if (hasConsole && !showConsole) setShowConsole(true);
 
       const combinedCode = `
         <html>
-          <head>
-            <style>${cssCode}</style>
-          </head>
+          <head><style>${cssCode}</style></head>
           <body>
             ${htmlCode}
             <script>
               (function() {
-                const originalLog = console.log;
+                const originalLog   = console.log;
                 const originalError = console.error;
-                const originalWarn = console.warn;
-                const originalInfo = console.info;
+                const originalWarn  = console.warn;
+                const originalInfo  = console.info;
 
-                console.log = function(...args) {
-                  originalLog.apply(console, args);
-                  window.parent.postMessage({
-                    type: 'console',
-                    method: 'log',
-                    message: args.map(arg => {
-                      try {
-                        return typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg);
-                      } catch (e) {
-                        return String(arg);
-                      }
-                    }).join(' ')
-                  }, '*');
-                };
+                function post(method, args) {
+                  window.parent.postMessage({ type: 'console', method, message: args.map(a => {
+                    try { return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a); }
+                    catch(e) { return String(a); }
+                  }).join(' ') }, '*');
+                }
 
-                console.error = function(...args) {
-                  originalError.apply(console, args);
-                  window.parent.postMessage({
-                    type: 'console',
-                    method: 'error',
-                    message: args.map(arg => String(arg)).join(' ')
-                  }, '*');
-                };
+                console.log   = function(...a) { originalLog.apply(console, a);   post('log',   a); };
+                console.error = function(...a) { originalError.apply(console, a); post('error', a); };
+                console.warn  = function(...a) { originalWarn.apply(console, a);  post('warn',  a); };
+                console.info  = function(...a) { originalInfo.apply(console, a);  post('info',  a); };
 
-                console.warn = function(...args) {
-                  originalWarn.apply(console, args);
-                  window.parent.postMessage({
-                    type: 'console',
-                    method: 'warn',
-                    message: args.map(arg => String(arg)).join(' ')
-                  }, '*');
-                };
-
-                console.info = function(...args) {
-                  originalInfo.apply(console, args);
-                  window.parent.postMessage({
-                    type: 'console',
-                    method: 'info',
-                    message: args.map(arg => String(arg)).join(' ')
-                  }, '*');
-                };
-
-                window.onerror = function(message, source, lineno, colno, error) {
-                  window.parent.postMessage({
-                    type: 'console',
-                    method: 'error',
-                    message: \`Error: \${message} (Line \${lineno})\`
-                  }, '*');
+                window.onerror = function(msg, src, line) {
+                  window.parent.postMessage({ type: 'console', method: 'error',
+                    message: \`Error: \${msg} (Line \${line})\` }, '*');
                   return false;
                 };
               })();
-
               ${jsCode}
             </script>
           </body>
@@ -161,82 +145,63 @@ const CodeEditor: React.FC = () => {
       `;
       setOutput(combinedCode);
     }, 250);
-
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(t);
   }, [htmlCode, cssCode, jsCode, showConsole]);
 
+  /* ── Console messages from iframe ──────────────────────────────────────── */
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handler = (event: MessageEvent) => {
       if (event.data.type === 'console') {
-        const newLog: ConsoleLog = {
+        setConsoleLogs(prev => [...prev, {
           type: event.data.method,
           message: event.data.message,
-          timestamp: new Date().toLocaleTimeString()
-        };
-        setConsoleLogs(prev => [...prev, newLog]);
-
-        if (!showConsole) {
-          setShowConsole(true);
-        }
+          timestamp: new Date().toLocaleTimeString(),
+        }]);
+        if (!showConsole) setShowConsole(true);
       }
     };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
   }, [showConsole]);
 
+  /* ── Keyboard shortcuts ─────────────────────────────────────────────────── */
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === 'F11') {
-        e.preventDefault();
-        setIsFullscreen(!isFullscreen);
-      }
-      if (e.key === 'Escape' && isFullscreen) {
-        setIsFullscreen(false);
-      }
-      if (e.key === '?' || (e.ctrlKey && e.key === '/')) {
-        e.preventDefault();
-        setShowShortcuts(true);
-      }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'F11') { e.preventDefault(); setIsFullscreen(f => !f); }
+      if (e.key === 'Escape' && isFullscreen) setIsFullscreen(false);
+      if (e.key === '?' || (e.ctrlKey && e.key === '/')) { e.preventDefault(); setShowShortcuts(true); }
     };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [isFullscreen]);
 
+  /* ── Handlers ───────────────────────────────────────────────────────────── */
   const copyToClipboard = (text: string, type: string) => {
-    if (!text || text.trim() === '') {
-      showToast(`No ${type} code to copy. Please write some code first.`, 'error', 'Nothing to Copy!');
+    if (!text?.trim()) {
+      showToast(`No ${type} code to copy.`, 'error', 'Nothing to copy');
       return;
     }
     navigator.clipboard.writeText(text).then(
-      () => {
-        showToast(`${type} code copied successfully!`, 'success', 'Copied!');
-      },
-      () => {
-        showToast('Failed to copy code to clipboard', 'error', 'Copy Failed');
-      }
+      () => showToast(`${type} copied.`, 'success', 'Copied'),
+      () => showToast('Copy failed.', 'error', 'Error'),
     );
   };
 
   const clearAll = () => {
     if (!htmlCode && !cssCode && !jsCode) {
-      showToast('No code to clear. All code boxes are already empty.', 'error', 'Nothing to Clear!');
+      showToast('Nothing to clear.', 'error', 'Empty');
       return;
     }
     setShowConfirmModal(true);
   };
 
   const handleConfirmClear = () => {
-    setHtmlCode('');
-    setCssCode('');
-    setJsCode('');
-    setConsoleLogs([]);
+    setHtmlCode(''); setCssCode(''); setJsCode(''); setConsoleLogs([]);
     localStorage.removeItem(STORAGE_KEYS.HTML);
     localStorage.removeItem(STORAGE_KEYS.CSS);
     localStorage.removeItem(STORAGE_KEYS.JS);
     setLastSaved('');
-    showToast('All code has been cleared successfully! Ready for a fresh start.', 'success', 'Cleared! ✨');
+    showToast('All code cleared.', 'success', 'Cleared');
   };
 
   const loadTemplate = (template: { html: string; css: string; js: string; name: string }) => {
@@ -244,423 +209,509 @@ const CodeEditor: React.FC = () => {
     setCssCode(template.css);
     setJsCode(template.js);
     setShowTemplates(false);
-    showToast(`${template.name} template loaded successfully!`, 'success', 'Template Loaded! 🎨');
-  };
-
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
+    showToast(`${template.name} loaded.`, 'success', 'Template loaded');
   };
 
   const handleThemeChange = (themeId: string) => {
     setCurrentTheme(themeId);
     localStorage.setItem(STORAGE_KEYS.THEME, themeId);
-    showToast(`Theme changed to ${getThemeById(themeId).name}!`, 'success', 'Theme Updated! 🎨');
+    showToast(`Theme: ${getThemeById(themeId).name}`, 'success', 'Theme updated');
   };
 
   const formatCode = () => {
     try {
       const formatHTML = (code: string) => {
         if (!code.trim()) return code;
+        const selfClosing = ['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'];
+        const inline      = ['a','abbr','b','bdi','bdo','cite','code','data','dfn','em','i','kbd','mark','q','s','samp','small','span','strong','sub','sup','time','u','var'];
 
         let formatted = code.replace(/>\s+</g, '><').trim();
-
-        const selfClosingTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
-        const inlineTags = ['a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'dfn', 'em', 'i', 'kbd', 'mark', 'q', 's', 'samp', 'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var'];
-
-        let result = '';
-        let indent = 0;
-        let i = 0;
+        let result = ''; let indent = 0; let i = 0;
 
         while (i < formatted.length) {
           if (formatted[i] === '<') {
-            let tagEnd = formatted.indexOf('>', i);
-            if (tagEnd === -1) {
-              result += formatted.substring(i);
-              break;
-            }
+            const tagEnd = formatted.indexOf('>', i);
+            if (tagEnd === -1) { result += formatted.substring(i); break; }
+            const tag     = formatted.substring(i, tagEnd + 1);
+            const match   = tag.match(/<\/?([a-zA-Z0-9]+)/);
+            const tagName = match ? match[1].toLowerCase() : '';
 
-            let tag = formatted.substring(i, tagEnd + 1);
-            let tagName = tag.match(/<\/?([a-zA-Z0-9]+)/);
-            let tagNameStr = tagName ? tagName[1].toLowerCase() : '';
-
-            if (tag.startsWith('</')) {
-              indent = Math.max(0, indent - 1);
-              result += '\n' + '  '.repeat(indent) + tag;
-            }
-            else if (tag.endsWith('/>') || selfClosingTags.includes(tagNameStr)) {
-              result += '\n' + '  '.repeat(indent) + tag;
-            }
-            else if (inlineTags.includes(tagNameStr)) {
-              result += tag;
-            }
-            else {
-              result += '\n' + '  '.repeat(indent) + tag;
-              indent++;
-            }
-
+            if (tag.startsWith('</'))                              { indent = Math.max(0, indent - 1); result += '\n' + '  '.repeat(indent) + tag; }
+            else if (tag.endsWith('/>') || selfClosing.includes(tagName)) { result += '\n' + '  '.repeat(indent) + tag; }
+            else if (inline.includes(tagName))                    { result += tag; }
+            else                                                   { result += '\n' + '  '.repeat(indent) + tag; indent++; }
             i = tagEnd + 1;
           } else {
-
-            let nextTag = formatted.indexOf('<', i);
-            if (nextTag === -1) {
-              let text = formatted.substring(i).trim();
-              if (text) result += text;
-              break;
-            }
-
-            let text = formatted.substring(i, nextTag).trim();
-            if (text) {
-              if (!result.endsWith('>')) {
-                result += text;
-              } else {
-                result += text;
-              }
-            }
-            i = nextTag;
+            const next = formatted.indexOf('<', i);
+            if (next === -1) { const t = formatted.substring(i).trim(); if (t) result += t; break; }
+            const t = formatted.substring(i, next).trim();
+            if (t) result += t;
+            i = next;
           }
         }
-
         return result.trim();
       };
 
-      const formatCSS = (code: string) => {
-        if (!code.trim()) return code;
+      const formatCSS = (code: string) =>
+        !code.trim() ? code : code
+          .replace(/\s*{\s*/g, ' {\n  ').replace(/\s*}\s*/g, '\n}\n\n')
+          .replace(/;\s*/g, ';\n  ').replace(/,\s*/g, ', ').trim();
 
-        let formatted = code
-          .replace(/\s*{\s*/g, ' {\n  ')
-          .replace(/\s*}\s*/g, '\n}\n\n')
-          .replace(/;\s*/g, ';\n  ')
-          .replace(/,\s*/g, ', ')
-          .trim();
+      const formatJS = (code: string) =>
+        !code.trim() ? code : code
+          .replace(/{\s*/g, ' {\n  ').replace(/\s*}\s*/g, '\n}\n')
+          .replace(/;\s*/g, ';\n  ').trim();
 
-        return formatted;
-      };
+      let did = false;
+      if (htmlCode.trim()) { setHtmlCode(formatHTML(htmlCode)); did = true; }
+      if (cssCode.trim())  { setCssCode(formatCSS(cssCode));   did = true; }
+      if (jsCode.trim())   { setJsCode(formatJS(jsCode));      did = true; }
 
-      const formatJS = (code: string) => {
-        if (!code.trim()) return code;
-
-        let formatted = code
-          .replace(/{\s*/g, ' {\n  ')
-          .replace(/\s*}\s*/g, '\n}\n')
-          .replace(/;\s*/g, ';\n  ')
-          .trim();
-
-        return formatted;
-      };
-
-      let formatted = false;
-      if (htmlCode.trim()) {
-        setHtmlCode(formatHTML(htmlCode));
-        formatted = true;
-      }
-      if (cssCode.trim()) {
-        setCssCode(formatCSS(cssCode));
-        formatted = true;
-      }
-      if (jsCode.trim()) {
-        setJsCode(formatJS(jsCode));
-        formatted = true;
-      }
-
-      if (formatted) {
-        showToast('Code formatted successfully!', 'success', 'Formatted! ✨');
-      } else {
-        showToast('No code to format', 'info', 'Empty');
-      }
-    } catch (error) {
-      console.error('Format error:', error);
-      showToast('Error formatting code', 'error', 'Format Failed');
+      showToast(did ? 'Code formatted.' : 'Nothing to format.', did ? 'success' : 'info', did ? 'Formatted' : 'Empty');
+    } catch (err) {
+      console.error('Format error:', err);
+      showToast('Format failed.', 'error', 'Error');
     }
-  };
-
-  const clearConsole = () => {
-    setConsoleLogs([]);
-  };
-
-  const toggleConsole = () => {
-    setShowConsole(!showConsole);
   };
 
   const downloadFile = (type: FileType) => {
     try {
-      let content = '';
-      let filename = '';
-      let mimeType = '';
-
+      let content = '', filename = '', mimeType = '';
       switch (type) {
         case 'html':
-          if (!htmlCode || htmlCode.trim() === '') {
-            showToast('No HTML code to download. Please write some HTML code first.', 'error', 'Nothing to Download!');
-            return;
-          }
-          content = htmlCode;
-          filename = 'index.html';
-          mimeType = 'text/html';
-          break;
+          if (!htmlCode?.trim()) { showToast('No HTML to download.', 'error', 'Nothing to download'); return; }
+          content = htmlCode; filename = 'index.html'; mimeType = 'text/html'; break;
         case 'css':
-          if (!cssCode || cssCode.trim() === '') {
-            showToast('No CSS code to download. Please write some CSS code first.', 'error', 'Nothing to Download!');
-            return;
-          }
-          content = cssCode;
-          filename = 'style.css';
-          mimeType = 'text/css';
-          break;
+          if (!cssCode?.trim()) { showToast('No CSS to download.', 'error', 'Nothing to download'); return; }
+          content = cssCode; filename = 'style.css'; mimeType = 'text/css'; break;
         case 'js':
-          if (!jsCode || jsCode.trim() === '') {
-            showToast('No JavaScript code to download. Please write some JS code first.', 'error', 'Nothing to Download!');
-            return;
-          }
-          content = jsCode;
-          filename = 'script.js';
-          mimeType = 'text/javascript';
-          break;
+          if (!jsCode?.trim()) { showToast('No JS to download.', 'error', 'Nothing to download'); return; }
+          content = jsCode; filename = 'script.js'; mimeType = 'text/javascript'; break;
         case 'all':
-          if (!htmlCode && !cssCode && !jsCode) {
-            showToast('No code to download. Please write some code first in any of the editors.', 'error', 'Nothing to Download!');
-            return;
-          }
-          content = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeZen Project</title>
-    <style>
-${cssCode || '/* No CSS code provided */'}
-    </style>
-</head>
-<body>
-${htmlCode || '<!-- No HTML code provided -->'}
-    <script>
-${jsCode || '// No JavaScript code provided'}
-    </script>
-</body>
-</html>`;
-          filename = 'codezen-project.html';
-          mimeType = 'text/html';
-          break;
-        default:
-          return;
+          if (!htmlCode && !cssCode && !jsCode) { showToast('Nothing to download.', 'error', 'Empty'); return; }
+          content = `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>CodeZen Project</title>\n  <style>\n${cssCode || '/* No CSS */'}\n  </style>\n</head>\n<body>\n${htmlCode || '<!-- No HTML -->'}\n  <script>\n${jsCode || '// No JS'}\n  </script>\n</body>\n</html>`;
+          filename = 'codezen-project.html'; mimeType = 'text/html'; break;
+        default: return;
       }
-
       const blob = new Blob([content], { type: mimeType });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      const fileType = type === 'all' ? 'complete project' : `${type.toUpperCase()} file`;
-      showToast(`Your ${fileType} has been downloaded successfully!`, 'success', 'Downloaded!');
-    } catch (error) {
-      console.error('Error downloading file:', error);
-      showToast('Error downloading file. Please try again.', 'error', 'Download Failed');
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+      showToast(`Downloaded ${filename}.`, 'success', 'Downloaded');
+    } catch (err) {
+      console.error('Download error:', err);
+      showToast('Download failed.', 'error', 'Error');
     }
   };
 
+  /* ── Inline styles constants ────────────────────────────────────────────── */
+  const navStyle: React.CSSProperties = {
+    height: '52px',
+    background: '#0f0f0f',
+    borderBottom: '1px solid #1f1f1f',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 16px',
+    position: 'sticky',
+    top: 0,
+    zIndex: 50,
+    gap: '8px',
+  };
+
+  /* Shared style for labeled toolbar buttons */
+  const tbBtn = (danger = false, active = false): React.CSSProperties => ({
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '5px',
+    padding: '5px 10px',
+    background: active ? 'rgba(232,255,71,0.08)' : 'transparent',
+    border: `1px solid ${active ? 'rgba(232,255,71,0.3)' : '#1f1f1f'}`,
+    borderRadius: '3px',
+    color: danger ? '#ff5555' : active ? '#e8ff47' : '#8a8a8a',
+    fontFamily: 'JetBrains Mono, monospace',
+    fontSize: '10px',
+    fontWeight: 500,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase' as const,
+    cursor: 'pointer',
+    whiteSpace: 'nowrap' as const,
+    transition: 'color 0.15s ease, border-color 0.15s ease, background 0.15s ease',
+    flexShrink: 0,
+  });
+
+  const panelStyle: React.CSSProperties = {
+    background: '#111',
+    border: '1px solid #2a2a2a',
+    borderRadius: '4px',
+    overflow: 'hidden',
+  };
+
+  const panelHeaderStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 12px',
+    height: '38px',
+    background: '#0f0f0f',
+    borderBottom: '1px solid #1f1f1f',
+  };
+
+  /* ── Render ─────────────────────────────────────────────────────────────── */
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-custom">
-      <nav className="w-full px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between animate-slide-in border-b border-white/10 relative">
-        <div className="flex items-center gap-3">
-          <Link to="/">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: '#0d0d0d', color: '#f2f2f2' }}
+    >
+      {/* ─── Toolbar / Navbar ─────────────────────────────────────────────── */}
+      <nav style={navStyle}>
+        {/* Left: wordmark + last-saved */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+          {/* Logo */}
+          <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
             <img
               src="/assets/logo.png"
-              alt="CodeZen Logo"
-              className="h-8 sm:h-10 md:h-12 w-auto hover:scale-105 transition-transform duration-200"
+              alt="CodeZen"
+              style={{ height: '30px', width: 'auto' }}
             />
           </Link>
+
           {lastSaved && (
-            <span className="hidden md:flex items-center gap-2 text-xs text-green-300 bg-green-500/20 px-3 py-1.5 rounded-full">
-              <i className="fa-solid fa-check-circle"></i>
+            <span
+              className="hidden md:block"
+              style={{
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '10px',
+                color: '#8a8a8a',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {lastSaved}
             </span>
           )}
         </div>
 
-        <div className="hidden xl:flex items-center gap-3">
-          <div className="relative group">
-            <select
-              value={currentTheme}
-              onChange={(e) => handleThemeChange(e.target.value)}
-              className="appearance-none px-3 py-2 pr-8 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 border border-blue-400/30 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/50 cursor-pointer shadow-lg hover:shadow-cyan-500/25 hover:scale-105"
-              title="Change Editor Theme"
-              style={{ backgroundImage: 'none', colorScheme: 'dark' }}
-            >
-              {themes.map((theme) => (
-                <option
-                  key={theme.id}
-                  value={theme.id}
-                  className="bg-gray-900 text-white py-2"
-                  style={{ backgroundColor: '#1a1a1a', color: '#ffffff' }}
-                >
-                  {theme.isDark ? '🌙' : '☀️'} {theme.name}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
-              <i className="fa-solid fa-palette text-white/70 text-sm"></i>
+        {/* Center: theme swatches — desktop */}
+        <div
+          className="hidden xl:flex items-center gap-2"
+          style={{ padding: '0 8px' }}
+        >
+          {themes.map((theme) => (
+            <div key={theme.id} className="tooltip-wrapper">
+              <button
+                onClick={() => handleThemeChange(theme.id)}
+                className={`theme-swatch ${currentTheme === theme.id ? 'active' : ''}`}
+                style={{ background: SWATCH_COLORS[theme.id] ?? '#333' }}
+              />
+              <span className="tooltip">{theme.name}</span>
             </div>
-          </div>
-
-          <button onClick={formatCode} className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Format Code">
-            <i className="fa-solid fa-wand-magic-sparkles"></i>
-            <span>FORMAT</span>
-          </button>
-
-          <button onClick={() => setShowShortcuts(true)} className="px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Keyboard Shortcuts">
-            <i className="fa-solid fa-keyboard"></i>
-            <span>SHORTCUTS</span>
-          </button>
-
-          <button onClick={() => setShowTemplates(true)} className="px-3 py-2 bg-indigo-500/20 hover:bg-indigo-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Load Template">
-            <i className="fa-solid fa-layer-group"></i>
-            <span>TEMPLATES</span>
-          </button>
-
-          <button onClick={toggleFullscreen} className="px-3 py-2 bg-violet-500/20 hover:bg-violet-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2" title="Toggle Fullscreen (F11)">
-            <i className={`fa-solid ${isFullscreen ? 'fa-compress' : 'fa-expand'}`}></i>
-            <span>{isFullscreen ? 'EXIT' : 'FULLSCREEN'}</span>
-          </button>
-
-          <button onClick={clearAll} className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 flex items-center gap-2">
-            <i className="fa-solid fa-trash-can"></i>
-            <span>CLEAR</span>
-          </button>
-
-          <Link to="/" className="px-6 py-2 bg-gradient-to-r from-blue-600 via-cyan-600 to-indigo-600 hover:from-blue-700 hover:via-cyan-700 hover:to-indigo-700 text-white text-sm font-semibold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-blue-500/50">
-            Go Home
-          </Link>
+          ))}
         </div>
 
-        <div className="flex xl:hidden items-center gap-2">
-          <div className="relative group">
-            <select
-              value={currentTheme}
-              onChange={(e) => handleThemeChange(e.target.value)}
-              className="appearance-none px-2 py-2 pr-7 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 hover:from-blue-500/30 hover:to-cyan-500/30 backdrop-blur-sm text-white text-xs font-semibold rounded-lg transition-all duration-200 border border-blue-400/30 focus:outline-none focus:border-cyan-400 cursor-pointer"
-              title="Change Editor Theme"
-              style={{ backgroundImage: 'none', colorScheme: 'dark' }}
-            >
-              {themes.map((theme) => (
-                <option
-                  key={theme.id}
-                  value={theme.id}
-                  className="bg-gray-900 text-white"
-                  style={{ backgroundColor: '#1a1a1a', color: '#ffffff' }}
-                >
-                  {theme.isDark ? '🌙' : '☀️'} {theme.name}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none">
-              <i className="fa-solid fa-palette text-white/70 text-xs"></i>
-            </div>
-          </div>
+        {/* Right: labeled action buttons — desktop */}
+        <div className="hidden xl:flex items-center gap-1.5">
 
-          <button onClick={clearAll} className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 backdrop-blur-sm text-white text-xs font-semibold rounded-lg transition-all duration-200 hover:scale-105" title="Clear All">
-            <i className="fa-solid fa-trash-can"></i>
+          <button
+            onClick={formatCode}
+            id="btn-format"
+            style={tbBtn()}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#3a3a3a'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#8a8a8a'; e.currentTarget.style.borderColor = '#1f1f1f'; }}
+          >
+            <i className="fa-solid fa-wand-magic-sparkles" style={{ fontSize: '10px' }} />
+            Format
           </button>
 
           <button
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-            className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 backdrop-blur-sm text-white text-lg font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+            onClick={() => setShowTemplates(true)}
+            id="btn-templates"
+            style={tbBtn()}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#3a3a3a'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#8a8a8a'; e.currentTarget.style.borderColor = '#1f1f1f'; }}
+          >
+            <i className="fa-solid fa-layer-group" style={{ fontSize: '10px' }} />
+            Templates
+          </button>
+
+          <button
+            onClick={() => setShowShortcuts(true)}
+            id="btn-shortcuts"
+            style={tbBtn()}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#3a3a3a'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#8a8a8a'; e.currentTarget.style.borderColor = '#1f1f1f'; }}
+          >
+            <i className="fa-solid fa-keyboard" style={{ fontSize: '10px' }} />
+            Shortcuts
+          </button>
+
+          <button
+            onClick={() => downloadFile('all')}
+            id="btn-download"
+            style={tbBtn()}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#3a3a3a'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#8a8a8a'; e.currentTarget.style.borderColor = '#1f1f1f'; }}
+          >
+            <i className="fa-solid fa-download" style={{ fontSize: '10px' }} />
+            Download
+          </button>
+
+          <button
+            onClick={() => setShowConsole(v => !v)}
+            id="btn-console"
+            style={tbBtn(false, showConsole)}
+            onMouseEnter={(e) => { if (!showConsole) { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#3a3a3a'; } }}
+            onMouseLeave={(e) => { if (!showConsole) { e.currentTarget.style.color = '#8a8a8a'; e.currentTarget.style.borderColor = '#1f1f1f'; } }}
+          >
+            <i className="fa-solid fa-terminal" style={{ fontSize: '10px' }} />
+            Console
+          </button>
+
+          <button
+            onClick={() => setIsFullscreen(f => !f)}
+            id="btn-fullscreen"
+            style={tbBtn(false, isFullscreen)}
+            onMouseEnter={(e) => { if (!isFullscreen) { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#3a3a3a'; } }}
+            onMouseLeave={(e) => { if (!isFullscreen) { e.currentTarget.style.color = '#8a8a8a'; e.currentTarget.style.borderColor = '#1f1f1f'; } }}
+          >
+            <i className={`fa-solid ${isFullscreen ? 'fa-compress' : 'fa-expand'}`} style={{ fontSize: '10px' }} />
+            {isFullscreen ? 'Exit Full' : 'Fullscreen'}
+          </button>
+
+          {/* Divider before destructive action */}
+          <div style={{ width: '1px', height: '18px', background: '#2a2a2a', margin: '0 2px', flexShrink: 0 }} />
+
+          <button
+            onClick={clearAll}
+            id="btn-clear"
+            style={tbBtn(true)}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#ff7777'; e.currentTarget.style.borderColor = '#4a1515'; e.currentTarget.style.background = '#1a0505'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#ff5555'; e.currentTarget.style.borderColor = '#1f1f1f'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            <i className="fa-solid fa-trash-can" style={{ fontSize: '10px' }} />
+            Clear
+          </button>
+
+          {/* Separator + home link */}
+          <div style={{ width: '1px', height: '18px', background: '#2a2a2a', margin: '0 2px', flexShrink: 0 }} />
+          <Link
+            to="/"
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '10px',
+              fontWeight: 500,
+              letterSpacing: '0.04em',
+              textTransform: 'uppercase',
+              color: '#8a8a8a',
+              textDecoration: 'none',
+              padding: '5px 10px',
+              border: '1px solid transparent',
+              borderRadius: '3px',
+              transition: 'color 0.15s ease',
+              flexShrink: 0,
+            }}
+            onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#f2f2f2')}
+            onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#8a8a8a')}
+          >
+            Home
+          </Link>
+        </div>
+
+        {/* Mobile controls */}
+        <div className="flex xl:hidden items-center gap-1">
+          {/* Theme swatches (compact) */}
+          <div className="hidden sm:flex items-center gap-1.5 mr-2">
+            {themes.map((theme) => (
+              <button
+                key={theme.id}
+                onClick={() => handleThemeChange(theme.id)}
+                className={`theme-swatch ${currentTheme === theme.id ? 'active' : ''}`}
+                style={{ background: SWATCH_COLORS[theme.id] ?? '#333', width: 14, height: 14 }}
+                title={theme.name}
+              />
+            ))}
+          </div>
+
+          {/* Download */}
+          <button onClick={() => downloadFile('all')} className="toolbar-btn" title="Download">
+            <i className="fa-solid fa-download" />
+          </button>
+
+          {/* Clear */}
+          <button onClick={clearAll} className="toolbar-btn danger" title="Clear">
+            <i className="fa-solid fa-trash-can" />
+          </button>
+
+          {/* Hamburger */}
+          <button
+            onClick={() => setShowMobileMenu(v => !v)}
+            className="toolbar-btn"
             title="Menu"
           >
-            <i className={`fa-solid ${showMobileMenu ? 'fa-times' : 'fa-bars'}`}></i>
+            <i className={`fa-solid ${showMobileMenu ? 'fa-times' : 'fa-bars'}`} />
           </button>
         </div>
 
+        {/* Mobile dropdown */}
         {showMobileMenu && (
-          <div className="absolute top-full right-0 mt-2 mr-3 sm:mr-4 w-64 bg-gray-900/95 backdrop-blur-lg rounded-lg shadow-2xl border border-white/10 py-2 z-50 animate-scale-in xl:hidden">
-            <button onClick={() => { formatCode(); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-blue-500/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-wand-magic-sparkles text-blue-400"></i>
-              <span>Format Code</span>
-            </button>
+          <div
+            className="animate-scale-in xl:hidden"
+            style={{
+              position: 'absolute',
+              top: '50px',
+              right: '8px',
+              width: '220px',
+              background: '#111',
+              border: '1px solid #2a2a2a',
+              borderRadius: '6px',
+              overflow: 'hidden',
+              zIndex: 60,
+            }}
+          >
+            {/* Theme swatches in mobile menu */}
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid #1f1f1f' }}>
+              <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: '#8a8a8a', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '10px' }}>Theme</p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {themes.map((theme) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => { handleThemeChange(theme.id); setShowMobileMenu(false); }}
+                    className={`theme-swatch ${currentTheme === theme.id ? 'active' : ''}`}
+                    style={{ background: SWATCH_COLORS[theme.id] ?? '#333' }}
+                    title={theme.name}
+                  />
+                ))}
+              </div>
+            </div>
 
-            <button onClick={() => { setShowShortcuts(true); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-cyan-500/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-keyboard text-cyan-400"></i>
-              <span>Keyboard Shortcuts</span>
-            </button>
-
-            <button onClick={() => { setShowTemplates(true); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-indigo-500/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-layer-group text-indigo-400"></i>
-              <span>Templates</span>
-            </button>
-
-            <button onClick={() => { toggleFullscreen(); setShowMobileMenu(false); }} className="w-full px-4 py-3 text-left text-white hover:bg-violet-500/20 transition-colors flex items-center gap-3">
-              <i className={`fa-solid ${isFullscreen ? 'fa-compress' : 'fa-expand'} text-violet-400`}></i>
-              <span>{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen Mode'}</span>
-            </button>
-
-            <div className="border-t border-white/10 my-2"></div>
-
-            <Link to="/" onClick={() => setShowMobileMenu(false)} className="w-full px-4 py-3 text-left text-white hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-indigo-600/20 transition-colors flex items-center gap-3">
-              <i className="fa-solid fa-home text-indigo-400"></i>
-              <span>Go Home</span>
-            </Link>
+            {[
+              { icon: 'fa-wand-magic-sparkles', label: 'Format Code',       action: () => { formatCode(); setShowMobileMenu(false); } },
+              { icon: 'fa-layer-group',         label: 'Templates',          action: () => { setShowTemplates(true); setShowMobileMenu(false); } },
+              { icon: 'fa-terminal',            label: `${showConsole ? 'Hide' : 'Show'} Console`, action: () => { setShowConsole(v => !v); setShowMobileMenu(false); } },
+              { icon: isFullscreen ? 'fa-compress' : 'fa-expand', label: isFullscreen ? 'Exit Fullscreen' : 'Fullscreen', action: () => { setIsFullscreen(f => !f); setShowMobileMenu(false); } },
+            ].map(({ icon, label, action }) => (
+              <button
+                key={label}
+                onClick={action}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '10px 16px',
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#8a8a8a',
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  transition: 'color 0.15s ease, background 0.15s ease',
+                  borderBottom: '1px solid #1a1a1a',
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#f2f2f2'; (e.currentTarget as HTMLButtonElement).style.background = '#1a1a1a'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#8a8a8a'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+              >
+                <i className={`fa-solid ${icon}`} style={{ width: 14, textAlign: 'center' }} />
+                {label}
+              </button>
+            ))}
           </div>
         )}
       </nav>
 
-      <main className={`flex-1 flex flex-col items-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fade-in ${isFullscreen ? 'fixed inset-0 z-40 bg-gradient-custom pt-20 overflow-y-auto' : ''}`}>
-        <h1 className="text-5xl xs:text-6xl sm:text-7xl md:text-7xl lg:text-8xl font-bold mb-4 sm:mb-5 text-center w-full max-w-full px-2">
-          <span className="inline-block relative animate-float">
-            <span className="relative z-10 bg-gradient-to-r from-white via-cyan-300 to-blue-500 text-transparent bg-clip-text animate-gradient-shift">
-              Build Something Amazing!
-            </span>
-          </span>
-        </h1>
-        <p className="text-base sm:text-lg md:text-lg text-gray-200 mb-2 text-center max-w-3xl animate-text-line-2 px-2">
-          Write code, see results instantly. It's that simple. Choose a template or start from scratch.
-        </p>
-        <p className="text-sm sm:text-base md:text-base text-gray-300 mb-6 text-center max-w-2xl animate-text-line-2 px-2">
-          Export files individually or download your complete project with one click.
-        </p>
+      {/* ─── Main content ─────────────────────────────────────────────────── */}
+      <main
+        className={`flex-1 flex flex-col ${isFullscreen ? 'fixed inset-0 z-40 overflow-y-auto' : ''}`}
+        style={{ background: '#0d0d0d', padding: '16px' }}
+      >
+        {/* Page heading */}
+        <div style={{ marginBottom: '16px' }}>
+          <h1
+            style={{
+              fontFamily: 'Syne, system-ui, sans-serif',
+              fontSize: '20px',
+              fontWeight: 700,
+              color: '#f2f2f2',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Editor
+          </h1>
+          <p
+            style={{
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '11px',
+              color: '#8a8a8a',
+              marginTop: '2px',
+            }}
+          >
+            Write code, see results instantly.
+          </p>
+        </div>
 
-        <div className="mb-6">
+        {/* Download all — compact strip */}
+        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
             onClick={() => downloadFile('all')}
-            className="px-8 py-3 bg-gradient-to-r from-blue-600 via-cyan-600 to-indigo-600 hover:from-blue-700 hover:via-cyan-700 hover:to-indigo-700 text-white font-bold rounded-lg transition-all duration-200 hover:scale-105 shadow-lg shadow-blue-500/50 flex items-center gap-2"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '7px 16px',
+              border: '1px solid #2a2a2a',
+              background: 'transparent',
+              color: '#5a5a5a',
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '11px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              borderRadius: '3px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              transition: 'color 0.15s ease, border-color 0.15s ease',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#f2f2f2'; e.currentTarget.style.borderColor = '#5a5a5a'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = '#5a5a5a'; e.currentTarget.style.borderColor = '#2a2a2a'; }}
           >
-            <i className="fa-solid fa-download"></i> Download Complete Project
+            <i className="fa-solid fa-download" style={{ fontSize: '10px' }} />
+            Download project
           </button>
         </div>
 
-        <div className="w-full max-w-[95%] xl:max-w-[1600px]">
+        {/* ── Code panels ─────────────────────────────────────────────────── */}
+        <div className="w-full max-w-[95%] xl:max-w-[1600px] mx-auto">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
 
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl">
-              <div className="flex items-center justify-between px-3 sm:px-4 py-3 bg-gray-800/50 border-b border-gray-700">
-                <div className="flex items-center gap-2 text-white font-semibold">
-                  <img
-                    src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Desktop%20Computer.png"
-                    alt="Desktop"
-                    width="20"
-                    height="20"
-                  />
-                  <span>HTML</span>
+            {/* HTML */}
+            <div style={panelStyle}>
+              <div style={panelHeaderStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: LANG_DOT.html, display: 'inline-block', flexShrink: 0 }} />
+                  <span className="editor-tab active">HTML</span>
                 </div>
-                <div className="flex gap-1 sm:gap-2">
-                  <button
-                    onClick={() => copyToClipboard(htmlCode, 'HTML')}
-                    className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors flex items-center gap-1"
-                    title="Copy HTML"
-                  >
-                    <i className="fa-regular fa-copy"></i>
-                    <span className="hidden lg:inline">Copy</span>
-                  </button>
-                  <button
-                    onClick={() => downloadFile('html')}
-                    className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors flex items-center gap-1"
-                    title="Download HTML"
-                  >
-                    <i className="fa-solid fa-download"></i>
-                    <span className="hidden lg:inline">Download</span>
-                  </button>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <div className="tooltip-wrapper">
+                    <button
+                      onClick={() => copyToClipboard(htmlCode, 'HTML')}
+                      className="toolbar-btn"
+                      style={{ width: 26, height: 26 }}
+                    >
+                      <i className="fa-regular fa-copy" style={{ fontSize: '11px' }} />
+                    </button>
+                    <span className="tooltip">Copy HTML</span>
+                  </div>
+                  <div className="tooltip-wrapper">
+                    <button
+                      onClick={() => downloadFile('html')}
+                      className="toolbar-btn"
+                      style={{ width: 26, height: 26 }}
+                    >
+                      <i className="fa-solid fa-download" style={{ fontSize: '11px' }} />
+                    </button>
+                    <span className="tooltip">Download HTML</span>
+                  </div>
                 </div>
               </div>
               <CodeMirror
@@ -673,34 +724,34 @@ ${jsCode || '// No JavaScript code provided'}
               />
             </div>
 
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl">
-              <div className="flex items-center justify-between px-3 sm:px-4 py-3 bg-gray-800/50 border-b border-gray-700">
-                <div className="flex items-center gap-2 text-white font-semibold">
-                  <img
-                    src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People%20with%20professions/Artist%20Light%20Skin%20Tone.png"
-                    alt="Artist"
-                    width="20"
-                    height="20"
-                  />
-                  <span>CSS</span>
+            {/* CSS */}
+            <div style={panelStyle}>
+              <div style={panelHeaderStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: LANG_DOT.css, display: 'inline-block', flexShrink: 0 }} />
+                  <span className="editor-tab active">CSS</span>
                 </div>
-                <div className="flex gap-1 sm:gap-2">
-                  <button
-                    onClick={() => copyToClipboard(cssCode, 'CSS')}
-                    className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors flex items-center gap-1"
-                    title="Copy CSS"
-                  >
-                    <i className="fa-regular fa-copy"></i>
-                    <span className="hidden lg:inline">Copy</span>
-                  </button>
-                  <button
-                    onClick={() => downloadFile('css')}
-                    className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors flex items-center gap-1"
-                    title="Download CSS"
-                  >
-                    <i className="fa-solid fa-download"></i>
-                    <span className="hidden lg:inline">Download</span>
-                  </button>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <div className="tooltip-wrapper">
+                    <button
+                      onClick={() => copyToClipboard(cssCode, 'CSS')}
+                      className="toolbar-btn"
+                      style={{ width: 26, height: 26 }}
+                    >
+                      <i className="fa-regular fa-copy" style={{ fontSize: '11px' }} />
+                    </button>
+                    <span className="tooltip">Copy CSS</span>
+                  </div>
+                  <div className="tooltip-wrapper">
+                    <button
+                      onClick={() => downloadFile('css')}
+                      className="toolbar-btn"
+                      style={{ width: 26, height: 26 }}
+                    >
+                      <i className="fa-solid fa-download" style={{ fontSize: '11px' }} />
+                    </button>
+                    <span className="tooltip">Download CSS</span>
+                  </div>
                 </div>
               </div>
               <CodeMirror
@@ -713,34 +764,34 @@ ${jsCode || '// No JavaScript code provided'}
               />
             </div>
 
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-lg overflow-hidden shadow-xl">
-              <div className="flex items-center justify-between px-3 sm:px-4 py-3 bg-gray-800/50 border-b border-gray-700">
-                <div className="flex items-center gap-2 text-white font-semibold">
-                  <img
-                    src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Camera%20with%20Flash.png"
-                    alt="Camera"
-                    width="20"
-                    height="20"
-                  />
-                  <span>JavaScript</span>
+            {/* JavaScript */}
+            <div style={panelStyle}>
+              <div style={panelHeaderStyle}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: LANG_DOT.js, display: 'inline-block', flexShrink: 0 }} />
+                  <span className="editor-tab active">JS</span>
                 </div>
-                <div className="flex gap-1 sm:gap-2">
-                  <button
-                    onClick={() => copyToClipboard(jsCode, 'JavaScript')}
-                    className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors flex items-center gap-1"
-                    title="Copy JavaScript"
-                  >
-                    <i className="fa-regular fa-copy"></i>
-                    <span className="hidden lg:inline">Copy</span>
-                  </button>
-                  <button
-                    onClick={() => downloadFile('js')}
-                    className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors flex items-center gap-1"
-                    title="Download JavaScript"
-                  >
-                    <i className="fa-solid fa-download"></i>
-                    <span className="hidden lg:inline">Download</span>
-                  </button>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <div className="tooltip-wrapper">
+                    <button
+                      onClick={() => copyToClipboard(jsCode, 'JavaScript')}
+                      className="toolbar-btn"
+                      style={{ width: 26, height: 26 }}
+                    >
+                      <i className="fa-regular fa-copy" style={{ fontSize: '11px' }} />
+                    </button>
+                    <span className="tooltip">Copy JS</span>
+                  </div>
+                  <div className="tooltip-wrapper">
+                    <button
+                      onClick={() => downloadFile('js')}
+                      className="toolbar-btn"
+                      style={{ width: 26, height: 26 }}
+                    >
+                      <i className="fa-solid fa-download" style={{ fontSize: '11px' }} />
+                    </button>
+                    <span className="tooltip">Download JS</span>
+                  </div>
                 </div>
               </div>
               <CodeMirror
@@ -763,64 +814,69 @@ ${jsCode || '// No JavaScript code provided'}
           <ConsoleOutput
             logs={consoleLogs}
             isVisible={showConsole}
-            onToggle={toggleConsole}
-            onClear={clearConsole}
+            onToggle={() => setShowConsole(v => !v)}
+            onClear={() => setConsoleLogs([])}
           />
         </div>
       </main>
 
-      <footer className="w-full px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-white/10 mt-8">
-        <div className="logo order-1 md:order-1">
-          <Link to="/">
-            <img
-              src="/assets/logo.png"
-              alt="CodeZen Logo"
-              className="h-7 sm:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity"
-            />
-          </Link>
+      {/* ─── Footer ─────────────────────────────────────────────────────── */}
+      <footer
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 16px',
+          height: '44px',
+          borderTop: '1px solid #1a1a1a',
+          fontFamily: 'JetBrains Mono, monospace',
+          fontSize: '11px',
+          color: '#8a8a8a',
+        }}
+      >
+        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <img
+            src="/assets/logo.png"
+            alt="CodeZen"
+            style={{ height: '22px', width: 'auto', opacity: 0.5, transition: 'opacity 0.15s ease' }}
+            onMouseEnter={(e) => ((e.target as HTMLImageElement).style.opacity = '1')}
+            onMouseLeave={(e) => ((e.target as HTMLImageElement).style.opacity = '0.5')}
+          />
+        </Link>
+
+        <div style={{ display: 'flex', gap: '16px' }}>
+          {[
+            { href: 'https://github.com/bedigambar', icon: 'fa-github', title: 'GitHub' },
+            { href: 'https://www.linkedin.com/in/digambar-behera', icon: 'fa-linkedin', title: 'LinkedIn' },
+            { href: 'https://x.com/digambarcodes', icon: 'fa-x-twitter', title: 'X' },
+          ].map(({ href, icon, title }) => (
+            <a
+              key={href}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={title}
+              style={{ color: '#8a8a8a', fontSize: '14px', transition: 'color 0.15s ease' }}
+              onMouseEnter={(e) => ((e.target as HTMLElement).style.color = '#f2f2f2')}
+              onMouseLeave={(e) => ((e.target as HTMLElement).style.color = '#8a8a8a')}
+            >
+              <i className={`fa-brands ${icon}`} />
+            </a>
+          ))}
         </div>
 
-        <div className="flex items-center gap-5 sm:gap-6 md:gap-8 order-2 md:order-3">
-          <a
-            href="https://github.com/bedigambar"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white hover:text-primary-400 transition-all duration-200 text-xl sm:text-2xl md:text-2xl lg:text-3xl hover:scale-110"
-          >
-            <i className="fa-brands fa-github"></i>
-          </a>
-          <a
-            href="https://www.linkedin.com/in/digambar-behera"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white hover:text-primary-400 transition-all duration-200 text-xl sm:text-2xl md:text-2xl lg:text-3xl hover:scale-110"
-          >
-            <i className="fa-brands fa-linkedin"></i>
-          </a>
-          <a
-            href="https://x.com/digambarcodes"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white hover:text-primary-400 transition-all duration-200 text-xl sm:text-2xl md:text-2xl lg:text-3xl hover:scale-110"
-          >
-            <i className="fa-brands fa-x-twitter"></i>
-          </a>
-        </div>
-
-        <div className="text-gray-300 text-center text-xs sm:text-base order-3 md:order-2">
-          <p>Made with ❤️, by Digambar</p>
-        </div>
+        <span>© {new Date().getFullYear()}</span>
       </footer>
 
+      {/* ─── Modals ──────────────────────────────────────────────────────── */}
       <ConfirmModal
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         onConfirm={handleConfirmClear}
         title="Clear All Code?"
-        message="Are you sure you want to clear all code? This will remove all HTML, CSS, and JavaScript code. This action cannot be undone."
+        message="Are you sure you want to clear all HTML, CSS, and JavaScript? This cannot be undone."
         confirmText="Clear All"
         cancelText="Cancel"
-        icon="🗑️"
       />
 
       <TemplatesModal
@@ -833,7 +889,7 @@ ${jsCode || '// No JavaScript code provided'}
         isOpen={showShortcuts}
         onClose={() => setShowShortcuts(false)}
       />
-    </div >
+    </div>
   );
 };
 
