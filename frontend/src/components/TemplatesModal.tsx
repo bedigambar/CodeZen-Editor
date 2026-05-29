@@ -37,7 +37,6 @@ const TemplatesModal: React.FC<TemplatesModalProps> = ({ isOpen, onClose, onSele
         className="animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div
           style={{
             display: 'flex',
@@ -81,14 +80,12 @@ const TemplatesModal: React.FC<TemplatesModalProps> = ({ isOpen, onClose, onSele
           </button>
         </div>
 
-        {/* Sub-header hint */}
         <div style={{ padding: '10px 20px', borderBottom: '1px solid #1a1a1a', flexShrink: 0 }}>
           <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#8a8a8a' }}>
             Select a template (your current code will be replaced).
           </p>
         </div>
 
-        {/* Grid */}
         <div
           style={{
             padding: '16px 20px 20px',
@@ -119,7 +116,6 @@ const TemplatesModal: React.FC<TemplatesModalProps> = ({ isOpen, onClose, onSele
                 (e.currentTarget as HTMLDivElement).style.background = '#0f0f0f';
               }}
             >
-              {/* Title row */}
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '6px' }}>
                 <h3
                   style={{
@@ -152,7 +148,6 @@ const TemplatesModal: React.FC<TemplatesModalProps> = ({ isOpen, onClose, onSele
                 </span>
               </div>
 
-              {/* Description */}
               <p
                 style={{
                   fontFamily: 'JetBrains Mono, monospace',
@@ -165,7 +160,6 @@ const TemplatesModal: React.FC<TemplatesModalProps> = ({ isOpen, onClose, onSele
                 {template.description}
               </p>
 
-              {/* Lang tags */}
               <div style={{ display: 'flex', gap: '4px' }}>
                 {template.html && (
                   <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '9px', color: '#e34c26', background: 'rgba(227,76,38,0.1)', border: '1px solid rgba(227,76,38,0.2)', borderRadius: '2px', padding: '2px 6px' }}>

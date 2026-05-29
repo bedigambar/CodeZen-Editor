@@ -39,7 +39,6 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         }}
         className="animate-scale-in"
       >
-        {/* Header */}
         <div
           style={{
             padding: '14px 20px',
@@ -63,7 +62,6 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </h3>
         </div>
 
-        {/* Body */}
         <div style={{ padding: '20px' }}>
           <p
             style={{

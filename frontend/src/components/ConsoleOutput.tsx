@@ -37,7 +37,6 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ logs, isVisible, onToggle
         overflow: 'hidden',
       }}
     >
-      {/* Console Header */}
       <div
         style={{
           display: 'flex',
@@ -140,8 +139,6 @@ const ConsoleOutput: React.FC<ConsoleOutputProps> = ({ logs, isVisible, onToggle
           Clear
         </button>
       </div>
-
-      {/* Console Content */}
       {isVisible && (
         <div
           style={{

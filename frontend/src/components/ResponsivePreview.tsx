@@ -50,7 +50,6 @@ const ResponsivePreview: React.FC<ResponsivePreviewProps> = ({
         overflow: 'hidden',
       }}
     >
-      {/* Header */}
       <div
         style={{
           display: 'flex',
@@ -78,7 +77,6 @@ const ResponsivePreview: React.FC<ResponsivePreviewProps> = ({
           </span>
         </div>
 
-        {/* Device select buttons */}
         <div style={{ display: 'flex', gap: '4px' }}>
           {(Object.keys(deviceSizes) as DeviceMode[]).map((mode) => (
             <button
@@ -106,7 +104,6 @@ const ResponsivePreview: React.FC<ResponsivePreviewProps> = ({
         </div>
       </div>
 
-      {/* Frame wrapper */}
       <div
         style={{
           background: '#0d0d0d',

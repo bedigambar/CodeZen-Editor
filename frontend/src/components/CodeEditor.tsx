@@ -14,7 +14,6 @@ import { Template } from '../data/templates';
 import { themes, getThemeById } from '../data/themes';
 import { FileType } from '../types';
 
-/* ─── Storage keys ─────────────────────────────────────────────────────────── */
 const STORAGE_KEYS = {
   HTML:  'codezen_html',
   CSS:   'codezen_css',
@@ -22,14 +21,12 @@ const STORAGE_KEYS = {
   THEME: 'codezen_theme',
 };
 
-/* ─── Types ────────────────────────────────────────────────────────────────── */
 interface ConsoleLog {
   type: 'log' | 'error' | 'warn' | 'info';
   message: string;
   timestamp: string;
 }
 
-/* ─── Theme swatch colors (one per theme id, in order) ─────────────────────── */
 const SWATCH_COLORS: Record<string, string> = {
   'onedark':      '#282c34',
   'vscode-dark':  '#1e1e1e',
@@ -38,14 +35,12 @@ const SWATCH_COLORS: Record<string, string> = {
   'github-light': '#ffffff',
 };
 
-/* ─── Panel header dot color per language ───────────────────────────────────── */
 const LANG_DOT: Record<string, string> = {
   html: '#e34c26',
   css:  '#264de4',
   js:   '#f7df1e',
 };
 
-/* ─── Component ────────────────────────────────────────────────────────────── */
 const CodeEditor: React.FC = () => {
   const [htmlCode, setHtmlCode]         = useState<string>('');
   const [cssCode, setCssCode]           = useState<string>('');
@@ -70,12 +65,10 @@ const CodeEditor: React.FC = () => {
   const hasShownWelcomeRef = useRef<boolean>(false);
   const { showToast } = useToast();
 
-  /* ── Page title SEO ────────────────────────────────────────────────────── */
   useEffect(() => {
     document.title = "CodeZen Editor — Write, Preview, and Ship Web Code";
   }, []);
 
-  /* ── Restore from localStorage ─────────────────────────────────────────── */
   useEffect(() => {
     const savedHtml  = localStorage.getItem(STORAGE_KEYS.HTML);
     const savedCss   = localStorage.getItem(STORAGE_KEYS.CSS);
@@ -94,7 +87,6 @@ const CodeEditor: React.FC = () => {
     }
   }, [showToast]);
 
-  /* ── Auto-save ─────────────────────────────────────────────────────────── */
   useEffect(() => {
     const t = setTimeout(() => {
       localStorage.setItem(STORAGE_KEYS.HTML, htmlCode);
@@ -107,7 +99,6 @@ const CodeEditor: React.FC = () => {
     return () => clearTimeout(t);
   }, [htmlCode, cssCode, jsCode]);
 
-  /* ── Live preview ──────────────────────────────────────────────────────── */
   useEffect(() => {
     const t = setTimeout(() => {
       const hasConsole = jsCode.includes('console.log') || jsCode.includes('console.error')
@@ -154,7 +145,6 @@ const CodeEditor: React.FC = () => {
     return () => clearTimeout(t);
   }, [htmlCode, cssCode, jsCode, showConsole, userClosedConsole]);
 
-  /* ── Console messages from iframe ──────────────────────────────────────── */
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       if (event.data.type === 'console') {
@@ -170,7 +160,6 @@ const CodeEditor: React.FC = () => {
     return () => window.removeEventListener('message', handler);
   }, [showConsole, userClosedConsole]);
 
-  /* ── Keyboard shortcuts ─────────────────────────────────────────────────── */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'F11') { e.preventDefault(); setIsFullscreen(f => !f); }
@@ -181,7 +170,6 @@ const CodeEditor: React.FC = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, [isFullscreen]);
 
-  /* ── Handlers ───────────────────────────────────────────────────────────── */
   const copyToClipboard = (text: string, type: string) => {
     if (!text?.trim()) {
       showToast(`No ${type} code to copy.`, 'error', 'Nothing to copy');
@@ -312,7 +300,6 @@ const CodeEditor: React.FC = () => {
     }
   };
 
-  /* ── Inline styles constants ────────────────────────────────────────────── */
   const navStyle: React.CSSProperties = {
     height: '52px',
     background: '#0f0f0f',
@@ -327,7 +314,6 @@ const CodeEditor: React.FC = () => {
     gap: '8px',
   };
 
-  /* Shared style for labeled toolbar buttons */
   const tbBtn = (danger = false, active = false): React.CSSProperties => ({
     display: 'inline-flex',
     alignItems: 'center',
@@ -365,17 +351,13 @@ const CodeEditor: React.FC = () => {
     borderBottom: '1px solid #1f1f1f',
   };
 
-  /* ── Render ─────────────────────────────────────────────────────────────── */
   return (
     <div
       className="min-h-screen flex flex-col"
       style={{ background: '#0d0d0d', color: '#f2f2f2' }}
     >
-      {/* ─── Toolbar / Navbar ─────────────────────────────────────────────── */}
       <nav style={navStyle}>
-        {/* Left: wordmark + last-saved */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-          {/* Logo */}
           <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
             <img
               src="/assets/logo.png"
@@ -399,7 +381,6 @@ const CodeEditor: React.FC = () => {
           )}
         </div>
 
-        {/* Center: theme swatches — desktop */}
         <div
           className="hidden xl:flex items-center gap-2"
           style={{ padding: '0 8px' }}
@@ -416,7 +397,6 @@ const CodeEditor: React.FC = () => {
           ))}
         </div>
 
-        {/* Right: labeled action buttons — desktop */}
         <div className="hidden xl:flex items-center gap-1.5">
 
           <button
@@ -485,7 +465,6 @@ const CodeEditor: React.FC = () => {
             {isFullscreen ? 'Exit Full' : 'Fullscreen'}
           </button>
 
-          {/* Divider before destructive action */}
           <div style={{ width: '1px', height: '18px', background: '#2a2a2a', margin: '0 2px', flexShrink: 0 }} />
 
           <button
@@ -499,7 +478,6 @@ const CodeEditor: React.FC = () => {
             Clear
           </button>
 
-          {/* Separator + home link */}
           <div style={{ width: '1px', height: '18px', background: '#2a2a2a', margin: '0 2px', flexShrink: 0 }} />
           <Link
             to="/"
@@ -524,9 +502,7 @@ const CodeEditor: React.FC = () => {
           </Link>
         </div>
 
-        {/* Mobile controls */}
         <div className="flex xl:hidden items-center gap-1">
-          {/* Theme swatches (compact) */}
           <div className="hidden sm:flex items-center gap-1.5 mr-2">
             {themes.map((theme) => (
               <button
@@ -539,7 +515,6 @@ const CodeEditor: React.FC = () => {
             ))}
           </div>
 
-          {/* Download */}
           <button onClick={() => downloadFile('all')} className="toolbar-btn" title="Download">
             <i className="fa-solid fa-download" />
           </button>
@@ -627,12 +602,10 @@ const CodeEditor: React.FC = () => {
         )}
       </nav>
 
-      {/* ─── Main content ─────────────────────────────────────────────────── */}
       <main
         className={`flex-1 flex flex-col ${isFullscreen ? 'fixed inset-0 z-40 overflow-y-auto' : ''}`}
         style={{ background: '#0d0d0d', padding: '16px' }}
       >
-        {/* Page heading */}
         <div style={{ marginBottom: '16px' }}>
           <h1
             style={{
@@ -657,7 +630,6 @@ const CodeEditor: React.FC = () => {
           </p>
         </div>
 
-        {/* Download all — compact strip */}
         <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
             onClick={() => downloadFile('all')}
@@ -686,11 +658,9 @@ const CodeEditor: React.FC = () => {
           </button>
         </div>
 
-        {/* ── Code panels ─────────────────────────────────────────────────── */}
         <div className="w-full max-w-[95%] xl:max-w-[1600px] mx-auto">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-6">
 
-            {/* HTML */}
             <div style={panelStyle}>
               <div style={panelHeaderStyle}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -730,7 +700,6 @@ const CodeEditor: React.FC = () => {
               />
             </div>
 
-            {/* CSS */}
             <div style={panelStyle}>
               <div style={panelHeaderStyle}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -770,7 +739,6 @@ const CodeEditor: React.FC = () => {
               />
             </div>
 
-            {/* JavaScript */}
             <div style={panelStyle}>
               <div style={panelHeaderStyle}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -826,7 +794,6 @@ const CodeEditor: React.FC = () => {
         </div>
       </main>
 
-      {/* ─── Footer ─────────────────────────────────────────────────────── */}
       <footer
         style={{
           display: 'flex',

@@ -38,7 +38,6 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
         className="animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div
           style={{
             display: 'flex',
@@ -81,7 +80,6 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
           </button>
         </div>
 
-        {/* Body */}
         <div style={{ padding: '20px' }}>
           <p
             style={{
@@ -139,7 +137,6 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
             ))}
           </div>
 
-          {/* Hint */}
           <div
             style={{
               marginTop: '16px',

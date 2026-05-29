@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
+import HeroWaveBackground from './HeroWaveBackground';
 
-/* ─── Feature data ─────────────────────────────────────────────────────────── */
 const features = [
   {
     num: '01',
@@ -30,7 +30,6 @@ const features = [
   },
 ];
 
-/* ─── Terminal lines ───────────────────────────────────────────────────────── */
 const terminalLines = [
   { prefix: '~/project', text: ' $ touch index.html style.css app.js', color: '#e8ff47' },
   { prefix: null,        text: '  Created 3 files', color: '#5a5a5a' },
@@ -41,7 +40,6 @@ const terminalLines = [
   { prefix: null,        text: '  Ready.', color: '#f2f2f2' },
 ];
 
-/* ─── Component ────────────────────────────────────────────────────────────── */
 const Home = () => {
   const featuresRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +47,6 @@ const Home = () => {
     document.title = "CodeZen — Minimalist Browser-Based Code Editor";
   }, []);
 
-  /* IntersectionObserver — slide features in from left */
   useEffect(() => {
     const items = featuresRef.current?.querySelectorAll<HTMLElement>('.feature-item');
     if (!items) return;
@@ -75,7 +72,6 @@ const Home = () => {
       className="min-h-screen flex flex-col"
       style={{ background: '#0d0d0d', color: '#f2f2f2' }}
     >
-      {/* ─── Nav ───────────────────────────────────────────────────────────── */}
       <nav
         className="w-full flex items-center justify-between px-6 md:px-12"
         style={{
@@ -88,7 +84,6 @@ const Home = () => {
           zIndex: 50,
         }}
       >
-        {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <img
             src="/assets/logo.png"
@@ -97,7 +92,6 @@ const Home = () => {
           />
         </Link>
 
-        {/* Nav actions */}
         <div className="flex items-center gap-4">
           <a
             href="https://github.com/bedigambar"
@@ -127,15 +121,13 @@ const Home = () => {
         </div>
       </nav>
 
-      {/* ─── Hero ──────────────────────────────────────────────────────────── */}
       <main className="flex-1">
         <section
-          className="w-full px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8"
+          className="w-full px-6 md:px-12 flex flex-col lg:flex-row items-center justify-between gap-12 lg:gap-8 relative overflow-hidden"
           style={{ minHeight: 'calc(100vh - 56px)', paddingTop: '80px', paddingBottom: '80px' }}
         >
-          {/* Left: headline + cta */}
+          <HeroWaveBackground />
           <div className="flex-1 max-w-xl">
-            {/* Eyebrow */}
             <p
               className="animate-fade-up"
               style={{
@@ -152,7 +144,6 @@ const Home = () => {
               Browser-based code editor
             </p>
 
-            {/* h1 */}
             <h1
               className="animate-fade-up"
               style={{
@@ -173,7 +164,6 @@ const Home = () => {
               Ship.
             </h1>
 
-            {/* Subtext */}
             <p
               className="animate-fade-up"
               style={{
@@ -181,7 +171,7 @@ const Home = () => {
                 fontSize: '14px',
                 fontWeight: 400,
                 lineHeight: 1.7,
-                color: '#a0a0a0',
+                color: '#e2e2e2',
                 maxWidth: '360px',
                 marginBottom: '40px',
                 animationDelay: '160ms',
@@ -191,7 +181,6 @@ const Home = () => {
               testing. No setup, no installs.
             </p>
 
-            {/* CTA */}
             <div
               className="animate-fade-up flex items-center gap-4"
               style={{ animationDelay: '240ms' }}
@@ -212,7 +201,6 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Right: terminal mockup */}
           <div
             className="flex-1 w-full max-w-lg relative"
             style={{ animationDelay: '300ms' }}
@@ -230,7 +218,6 @@ const Home = () => {
                 boxShadow: '0 0 60px rgba(232,255,71,0.04), 0 24px 48px rgba(0,0,0,0.6)',
               }}
             >
-              {/* Window chrome */}
               <div
                 style={{
                   display: 'flex',
@@ -249,7 +236,6 @@ const Home = () => {
                 </span>
               </div>
 
-              {/* Terminal body */}
               <div style={{ padding: '20px 20px 24px' }}>
                 {terminalLines.map((line, i) => (
                   <div
@@ -263,7 +249,6 @@ const Home = () => {
                     {line.text}
                   </div>
                 ))}
-                {/* Blinking cursor */}
                 <span
                   className="animate-type-cursor"
                   style={{
@@ -280,7 +265,6 @@ const Home = () => {
           </div>
         </section>
 
-        {/* ─── Features ────────────────────────────────────────────────────── */}
         <section
           ref={featuresRef}
           className="w-full px-6 md:px-12"
@@ -290,7 +274,6 @@ const Home = () => {
             borderTop: '1px solid #1a1a1a',
           }}
         >
-          {/* Section label */}
           <p
             style={{
               fontFamily: 'JetBrains Mono, monospace',
@@ -305,7 +288,6 @@ const Home = () => {
             What's inside
           </p>
 
-          {/* Numbered list */}
           <div
             style={{
               display: 'flex',
@@ -323,7 +305,6 @@ const Home = () => {
                   transitionDelay: `${i * 80}ms`,
                 }}
               >
-                {/* Number */}
                 <span
                   style={{
                     fontFamily: 'Syne, system-ui, sans-serif',
@@ -338,7 +319,6 @@ const Home = () => {
                   {f.num}
                 </span>
 
-                {/* Title */}
                 <span
                   className="w-full md:w-auto md:min-w-[220px]"
                   style={{
@@ -353,7 +333,6 @@ const Home = () => {
                   {f.title}
                 </span>
 
-                {/* Description */}
                 <span
                   style={{
                     fontFamily: 'JetBrains Mono, monospace',
@@ -372,7 +351,6 @@ const Home = () => {
         </section>
       </main>
 
-      {/* ─── Footer ────────────────────────────────────────────────────────── */}
       <footer
         className="w-full px-6 md:px-12 flex flex-col sm:flex-row items-center justify-between gap-4"
         style={{
@@ -383,7 +361,6 @@ const Home = () => {
           color: '#8a8a8a',
         }}
       >
-        {/* Logo */}
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
           <img
             src="/assets/logo.png"
@@ -394,7 +371,6 @@ const Home = () => {
           />
         </Link>
 
-        {/* Social icons */}
         <div className="flex items-center gap-5">
           <a
             href="https://github.com/bedigambar"
@@ -431,7 +407,6 @@ const Home = () => {
           </a>
         </div>
 
-        {/* Year */}
         <span>© {new Date().getFullYear()}</span>
       </footer>
     </div>
