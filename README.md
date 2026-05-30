@@ -111,6 +111,9 @@ The optimized bundle will be generated under the `build/` folder.
 
 ---
 
-## License
+## License & Attribution
 
-Distributed under the MIT License. See [LICENSE](https://github.com/bedigambar/CodeZen-Editor/blob/main/LICENSE) for details.
+CodeZen is released under the [MIT License](https://github.com/bedigambar/CodeZen-Editor/blob/main/LICENSE) — © 2025 bedigambar.
+
+You're welcome to use, modify and build on this code, but you must keep the copyright notice and license intact (i.e. give credit). If you ship something based on CodeZen, a shout-out and a link back to [this repo](https://github.com/bedigambar/CodeZen-Editor) is hugely appreciated. 🙏
+
