@@ -396,7 +396,7 @@ const CodeEditor: React.FC = () => {
           content = jsCode; filename = 'script.js'; mimeType = 'text/javascript'; break;
         case 'all':
           if (!htmlCode && !cssCode && !jsCode) { showToast('Nothing to download.', 'error', 'Empty'); return; }
-          content = `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>CodeZen Project</title>\n  <style>\n${cssCode || '/* No CSS */'}}\n  </style>\n</head>\n<body>\n${htmlCode || '<!-- No HTML -->'}\n  <script>\n${jsCode || '// No JS'}\n  <\/script>\n</body>\n</html>`;
+          content = `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>CodeZen Project</title>\n  <style>\n${cssCode || '/* No CSS */'}}\n  </style>\n</head>\n<body>\n${htmlCode || '<!-- No HTML -->'}\n  <script>\n${jsCode || '// No JS'}\n  </script>\n</body>\n</html>`;
           filename = 'codezen-project.html'; mimeType = 'text/html'; break;
         default: return;
       }
