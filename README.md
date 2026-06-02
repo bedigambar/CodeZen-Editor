@@ -8,26 +8,30 @@ The editor combines syntax highlighting, real-time live preview, responsive devi
 
 ## Technical Features
 
-### Core Capabilities
-* **Live Code Editing** — Standalone editors for HTML, CSS, and JavaScript with syntax highlighting powered by CodeMirror 6.
-* **Instant Preview** — Auto-updates the running preview frame as you type with debounced performance.
-* **Built-in Console Terminal** — Debug JavaScript directly on-page; captures `console.log`, `console.warn`, `console.error`, and `console.info` in a custom monospace terminal panel.
-* **Responsive Emulation** — View output inside a simulated window frame at Mobile (375px), Tablet (768px), Desktop (1200px), or Full-width layouts.
-* **Intelligent Auto-Save** — Persists your working state locally via browser storage to prevent accidental data loss.
+### Distraction-Free Developer Workspace
+* **Zen Mode (`Ctrl + Shift + Z`)** — Instantly strips away all panels, headers, and tabs, leaving a full-bleed active editor and preview layout. Press `Tab` in Zen Mode to cycle panels (HTML → CSS → JS) and `Esc` to exit.
+* **Focus Lock** — Promotes visual flow. If the keyboard is inactive for 3 seconds, non-active editor panels fade out to `0.15` opacity. Move the mouse to restore them.
+* **Fuzzy Command Palette (`Ctrl + K` or Search Icon)** — Fast-action control center. Access and activate all editor themes, boilerplate templates, and system shortcuts instantly with fuzzy autocomplete typing.
 
-### Design System & Theme config
-* **Editorial Typography** — Set in Syne for headings/tabs and JetBrains Mono for code, buttons, and console outputs.
-* **High Contrast / High Legibility** — Deep backgrounds (`#0d0d0d`/`#111`), subtle clean borders (`#1f1f1f`/`#2a2a2a`), with a single bright highlight in acid yellow (`#e8ff47`) and danger states in solid red (`#ff5555`).
-* **5 Editor Themes** — Toggle between One Dark, VSCode Dark, Dracula, Monokai, and GitHub Light.
-* **Refined Micro-interactions** — Smooth transitions, hover border enhancements, and clean, scale-in animations replace bounce effects.
+### Visual Prototyping & Emulation
+* **Responsive Emulation** — View live page renders inside simulated device viewports (Mobile 375px, Tablet 768px, Desktop 1200px).
+* **Side-by-Side Device Comparison** — View Mobile, Tablet, and Desktop rendering frames side-by-side simultaneously in scrollable columns.
+* **Custom Device Viewports & Flip Orientation** — Create, name, and save your own custom device screen dimensions (saved in `localStorage`), and rotate active viewports between portrait and landscape.
+* **Persisted Canvas Snapshots & Diff Splitter** — Capture layout snapshots of HTML/CSS/JS, see preview frame thumbnails, and compare any two snapshots side-by-side using an interactive draggable comparison slider.
 
-### Utility Actions
-* **Intelligent Auto-Format** — Pretty-prints your current HTML, CSS, and JS code in one click.
-* **Template Library** — Select and load boilerplate structures (Landing Page, Profile Card, Navigation Bar, Todo List, Animated Buttons).
-* **Export Options** — Download individual `.html`, `.css`, or `.js` source files, or export a single self-contained HTML file containing all assets.
-* **Keyboard Shortcuts** — Maximize productivity with quick keys:
-  * `F11` — Toggle Fullscreen Mode
-  * `Esc` — Exit Fullscreen Mode
+### Exceptional Monospace Console
+* **Collapsible Object/Array Inspection** — Logs complex objects and arrays into tree graphs (Chrome DevTools style) allowing multi-level expansion.
+* **Real-time Error Underlining** — Automatically runs JS preview execution checks. If an error is thrown, the exact failing line in the CodeMirror JS editor is highlighted in red, clearing once the user edits.
+* **Execution Timeline** — Benchmarks the speed of code execution. Every log features a relative timestamp (e.g. `+12.4ms`) and a visual timing scale bar corresponding to when it fired relative to page load.
+
+### Code Editing & Utilities
+* **Live Code Editing & Auto-Save** — Editors for HTML, CSS, and JS powered by CodeMirror 6 with syntax highlighting, automatic asset recovery, and session saving.
+* **Intelligent Auto-Format** — Pretty-prints your markup and code styling in one click.
+* **Template Library** — Select and load ready-to-run code templates, including a custom console showcase demo.
+* **Export Options** — Download source code as separate files or compiled into a single self-contained HTML pack.
+* **Keyboard Shortcuts**:
+  * `Ctrl + Shift + Z` — Toggle Zen distraction-free mode
+  * `Ctrl + K` or `🔍` — Toggle Command Palette
   * `?` or `Ctrl + /` — Open Keyboard Shortcuts Guide
 
 ---
@@ -48,6 +52,8 @@ frontend/
 │   │   ├── Home.tsx              # Minimalist landing page
 │   │   ├── ConsoleOutput.tsx     # Custom monospace console terminal
 │   │   ├── ResponsivePreview.tsx # Device preview frame simulator
+│   │   ├── CommandPalette.tsx    # Fuzzy search palette (Ctrl+K)
+│   │   ├── SnapshotManager.tsx   # Persisted canvas snapshots & splitter diffs
 │   │   ├── TemplatesModal.tsx    # Code templates panel
 │   │   ├── ConfirmModal.tsx      # Warning confirmation modal
 │   │   ├── KeyboardShortcutsModal.tsx  # Shortcuts cheat sheet

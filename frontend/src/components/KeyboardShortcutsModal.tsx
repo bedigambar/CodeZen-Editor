@@ -8,11 +8,18 @@ interface KeyboardShortcutsModalProps {
 const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const shortcuts = [
-    { key: 'F11',          description: 'Toggle fullscreen mode' },
-    { key: 'Esc',          description: 'Exit fullscreen mode' },
-    { key: '? / Ctrl + /', description: 'Open this shortcuts panel' },
+  const shortcuts: { key: string; description: string; category: string }[] = [
+    { category: 'Zen',       key: 'Ctrl + Shift + Z', description: 'Toggle Zen Mode (distraction-free)' },
+    { category: 'Zen',       key: 'Tab',              description: 'Cycle panels in Zen Mode (HTML→CSS→JS)' },
+    { category: 'Zen',       key: 'Esc',              description: 'Exit Zen Mode / fullscreen' },
+    { category: 'Editor',    key: 'F11',              description: 'Toggle fullscreen mode' },
+    { category: 'Editor',    key: 'Ctrl + K',         description: 'Open Command Palette' },
+    { category: 'Editor',    key: '? / Ctrl + /',     description: 'Open this shortcuts panel' },
+    { category: 'Editor',    key: 'Ctrl + S',         description: 'Force save to localStorage' },
+    { category: 'Snapshots', key: 'Auto',             description: 'Focus Lock: panels dim after 3s idle' },
   ];
+
+  const categories = Array.from(new Set(shortcuts.map(s => s.category)));
 
   return (
     <div
@@ -94,66 +101,63 @@ const KeyboardShortcutsModal: React.FC<KeyboardShortcutsModalProps> = ({ isOpen,
             Available shortcuts
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {shortcuts.map((s, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 14px',
-                  background: '#0f0f0f',
-                  border: '1px solid #1f1f1f',
-                  borderRadius: '4px',
-                }}
-              >
-                <span
-                  style={{
-                    fontFamily: 'JetBrains Mono, monospace',
-                    fontSize: '12px',
-                    color: '#a0a0a0',
-                  }}
-                >
-                  {s.description}
-                </span>
-                <kbd
-                  style={{
-                    fontFamily: 'JetBrains Mono, monospace',
-                    fontSize: '11px',
-                    color: '#e8ff47',
-                    background: '#1a1a00',
-                    border: '1px solid #3a3a00',
-                    borderRadius: '3px',
-                    padding: '3px 8px',
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                    marginLeft: '12px',
-                  }}
-                >
-                  {s.key}
-                </kbd>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            {categories.map((cat) => (
+              <div key={cat}>
+                <div style={{
+                  fontFamily: 'JetBrains Mono, monospace',
+                  fontSize: '9px', color: '#3a3a3a',
+                  textTransform: 'uppercase', letterSpacing: '0.1em',
+                  marginBottom: '6px', paddingLeft: '2px',
+                }}>
+                  {cat}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {shortcuts.filter(s => s.category === cat).map((s, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        padding: '10px 14px',
+                        background: '#0f0f0f',
+                        border: '1px solid #1f1f1f',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: '#a0a0a0' }}>
+                        {s.description}
+                      </span>
+                      <kbd style={{
+                        fontFamily: 'JetBrains Mono, monospace',
+                        fontSize: '11px', color: '#e8ff47',
+                        background: '#1a1a00', border: '1px solid #3a3a00',
+                        borderRadius: '3px', padding: '3px 8px',
+                        whiteSpace: 'nowrap', flexShrink: 0, marginLeft: '12px',
+                      }}>
+                        {s.key}
+                      </kbd>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
 
           <div
             style={{
-              marginTop: '16px',
-              padding: '10px 14px',
-              background: '#0f0f0f',
-              border: '1px solid #1f1f1f',
-              borderRadius: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
+              marginTop: '16px', padding: '10px 14px',
+              background: '#0f0f0f', border: '1px solid #1f1f1f', borderRadius: '4px',
+              display: 'flex', alignItems: 'center', gap: '8px',
             }}
           >
             <i className="fa-solid fa-circle-info" style={{ color: '#8a8a8a', fontSize: '11px', flexShrink: 0 }} />
             <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: '#8a8a8a' }}>
-              Press <kbd style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '2px', padding: '1px 5px', color: '#8a8a8a' }}>?</kbd> anytime to open this panel
+              Press <kbd style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '2px', padding: '1px 5px', color: '#8a8a8a' }}>?</kbd> or <kbd style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: '2px', padding: '1px 5px', color: '#8a8a8a' }}>Ctrl+/</kbd> anytime to open this panel
             </span>
           </div>
+
         </div>
       </div>
     </div>

@@ -295,3 +295,267 @@ code, pre {
   pointer-events: none;
   border-radius: 50%;
 }
+
+/* ─── Zen Mode ───────────────────────────────────────────────────────────────── */
+@keyframes zenEnter {
+  from { opacity: 0; transform: scale(0.98); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes zenBarSlideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.zen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #080808;
+  display: flex;
+  flex-direction: column;
+  animation: zenEnter 0.3s ease-out forwards;
+}
+
+.zen-editor-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.zen-editor-wrap .cm-editor {
+  height: 100% !important;
+}
+
+.zen-bar {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 20px;
+  background: rgba(15, 15, 15, 0.92);
+  border: 1px solid #2a2a2a;
+  border-radius: 40px;
+  backdrop-filter: blur(12px);
+  z-index: 210;
+  animation: zenBarSlideUp 0.4s ease-out forwards;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.zen-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid #3a3a3a;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.zen-dot.active {
+  background: #e8ff47;
+  border-color: #e8ff47;
+  transform: scale(1.25);
+}
+
+.zen-dot:hover:not(.active) {
+  border-color: #8a8a8a;
+  background: #2a2a2a;
+}
+
+/* ─── Focus Lock ─────────────────────────────────────────────────────────────── */
+.panel-focus-dim {
+  opacity: 0.15;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.panel-focus-active {
+  opacity: 1;
+  pointer-events: all;
+  transition: opacity 0.2s ease;
+}
+
+/* ─── Command Palette ─────────────────────────────────────────────────────────── */
+@keyframes cmdEnter {
+  from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.cmd-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  animation: fadeUp 0.15s ease-out forwards;
+}
+
+.cmd-panel {
+  width: 100%;
+  max-width: 580px;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 32px 64px rgba(0,0,0,0.85), 0 0 0 1px rgba(232,255,71,0.05);
+  animation: cmdEnter 0.2s ease-out forwards;
+}
+
+.cmd-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f2f2f2;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  padding: 16px 16px 16px 0;
+  caret-color: #e8ff47;
+}
+
+.cmd-input::placeholder {
+  color: #3a3a3a;
+}
+
+.cmd-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background 0.1s ease, border-color 0.1s ease;
+}
+
+.cmd-result-item.selected {
+  background: rgba(232, 255, 71, 0.05);
+  border-left-color: #e8ff47;
+}
+
+.cmd-result-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+/* ─── Snapshot Manager ───────────────────────────────────────────────────────── */
+@keyframes drawerSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.snapshot-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  background: #0f0f0f;
+  border-left: 1px solid #2a2a2a;
+  z-index: 150;
+  display: flex;
+  flex-direction: column;
+  animation: drawerSlideIn 0.25s ease-out forwards;
+  box-shadow: -16px 0 48px rgba(0,0,0,0.5);
+}
+
+.snapshot-thumbnail {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+}
+
+.snapshot-thumbnail iframe {
+  width: 400%;
+  height: 400%;
+  transform: scale(0.25);
+  transform-origin: top left;
+  pointer-events: none;
+  border: none;
+}
+
+.snapshot-diff-view {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: #080808;
+  display: flex;
+  flex-direction: column;
+  animation: zenEnter 0.25s ease-out forwards;
+}
+
+.diff-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: none;
+}
+
+.diff-iframe {
+  flex: 1;
+  border: none;
+  display: block;
+  width: 100%;
+}
+
+.diff-splitter {
+  width: 4px;
+  background: #2a2a2a;
+  cursor: col-resize;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.diff-splitter:hover,
+.diff-splitter.dragging {
+  background: #e8ff47;
+}
+
+/* ─── Device Compare Row ─────────────────────────────────────────────────────── */
+.device-compare-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 24px;
+  background: #0d0d0d;
+  align-items: flex-start;
+  min-height: 520px;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a2a #111;
+}
+
+.device-compare-frame {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  transition: box-shadow 0.2s ease;
+}
+
+.device-compare-frame:hover {
+  box-shadow: 0 16px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,255,71,0.1);
+}
+
+/* ─── CodeMirror Error Line Highlight ─────────────────────────────────────── */
+.cm-error-line {
+  background: rgba(255, 85, 85, 0.1) !important;
+  border-left: 3px solid #ff5555 !important;
+}

@@ -909,5 +909,201 @@ document.querySelectorAll('.btn').forEach(btn => {
     console.info('Click event captured:', e.target.className);
   });
 });`
+  },
+  {
+    id: 'console-showcase',
+    name: 'Console Showcase',
+    description: 'An interactive demo showcasing structured logging, error highlights, and the execution timeline.',
+    category: 'Demo',
+    html: `<div class="demo-container">
+  <div class="demo-header">
+    <h1>Exceptional Console Showcase</h1>
+    <p>Use the buttons below to test structured object logging, runtime error highlighting, and the execution timeline.</p>
+  </div>
+
+  <div class="demo-actions">
+    <button class="btn btn-action" id="logObject">Log Complex Object</button>
+    <button class="btn btn-action" id="logTimeline">Run Timeline Logs (Delays)</button>
+    <button class="btn btn-action btn-danger" id="triggerError">Trigger Runtime Error</button>
+  </div>
+
+  <div class="tips-box">
+    <h3>💡 What to look for:</h3>
+    <ul>
+      <li><strong>Structured Objects:</strong> Click "▶" to expand nested levels (Dracula theme styled tree).</li>
+      <li><strong>Execution Timeline:</strong> Look at the right side of the log rows. You will see colored bars corresponding to when the logs occurred relative to startup.</li>
+      <li><strong>Error Highlights:</strong> Triggering the error will highlight the exact line in the JS editor in translucent red! Start typing in the JS editor to clear the highlight automatically.</li>
+    </ul>
+  </div>
+</div>`,
+    css: `* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #0b0b0c;
+  color: #e2e8f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.demo-container {
+  background: #111112;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  padding: 32px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+
+.demo-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.demo-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 8px;
+}
+
+.demo-header p {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.demo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.btn {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  width: 100%;
+  text-align: center;
+}
+
+.btn-action {
+  background: transparent;
+  border: 1px solid #3f3f46;
+  color: #e2e8f0;
+}
+
+.btn-action:hover {
+  border-color: #e8ff47;
+  color: #e8ff47;
+  background: rgba(232, 255, 71, 0.03);
+}
+
+.btn-danger {
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.btn-danger:hover {
+  background: #ef4444;
+  color: #09090b;
+}
+
+.tips-box {
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.tips-box h3 {
+  font-size: 12px;
+  color: #fafafa;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tips-box ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tips-box li {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.tips-box strong {
+  color: #f8fafc;
+}`,
+    js: `// Exceptional Console Showcase Controller
+console.log("Console demo template loaded.");
+console.info("Try logging objects and testing the timeline below.");
+
+// 1. Log Structured Object
+document.getElementById('logObject').addEventListener('click', () => {
+  const complexData = {
+    userId: 1042,
+    username: "dev_zen",
+    profile: {
+      firstName: "Alice",
+      lastName: "Smith",
+      role: "Lead Engineer",
+      skills: ["React", "TypeScript", "CodeMirror"],
+    },
+    activeSession: true,
+    stats: {
+      uptime: 99.98,
+      lastBuild: new Date().toLocaleTimeString(),
+    },
+    logDetails: function getSummary() { return "Profile snapshot"; }
+  };
+  
+  console.log("Structured Log Data:", complexData);
+});
+
+// 2. Timeline Delays
+document.getElementById('logTimeline').addEventListener('click', () => {
+  console.warn("Timeline log sequence initiated...");
+  
+  setTimeout(() => {
+    console.log("Log fired +150ms after sequence start");
+  }, 150);
+
+  setTimeout(() => {
+    console.info("Log fired +400ms with system info details");
+  }, 400);
+
+  setTimeout(() => {
+    console.log("Log fired +750ms finishing the timeline sequence");
+  }, 750);
+});
+
+// 3. Trigger Error
+document.getElementById('triggerError').addEventListener('click', () => {
+  console.warn("Triggering runtime error on the next line...");
+  // This will intentionally throw a runtime ReferenceError
+  nonExistentFunction();
+});`
   }
 ];
