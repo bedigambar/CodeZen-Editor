@@ -1105,5 +1105,255 @@ document.getElementById('triggerError').addEventListener('click', () => {
   // This will intentionally throw a runtime ReferenceError
   nonExistentFunction();
 });`
+  },
+  {
+id: 'letter-curtain',
+name: 'Letter Curtain',
+description: 'A camera-reactive curtain of letters with hand tracking and a mouse/touch fallback.',
+category: 'Interactive',
+html: `<video id="vid" playsinline autoplay muted></video>
+<canvas id="c"></canvas>
+<div id="status">starting camera...</div>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.min.js" crossorigin="anonymous"></script>`,
+css: `*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: "Courier New", monospace;
+}
+
+video {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  transform: scaleX(-1);
+  z-index: 0;
+  pointer-events: none;
+  background: #000;
+}
+
+canvas#c {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  cursor: none;
+  z-index: 2;
+}
+
+#status {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+#status.active {
+  color: rgba(255,255,255,0.82);
+}`,
+js: `const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const video = document.getElementById('vid');
+const statusEl = document.getElementById('status');
+const pool = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,;:{}()=+-*/&%$#@!?';
+const strands = [];
+const sparkles = [];
+const maxDpr = 1.35;
+const spacing = 42;
+let width = 0;
+let height = 0;
+let dpr = 1;
+let pointer = null;
+let previousPointer = null;
+let handsInstance = null;
+let sendingFrame = false;
+let lastHandsFrame = 0;
+let frame = 0;
+
+function randomChar() {
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function point(x, y, pinned) {
+  return { x, y, oldX: x, oldY: y, baseX: x, baseY: y, pinned, wakeX: 0, rotation: 0, char: randomChar() };
+}
+
+function init() {
+  dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
+  width = window.innerWidth;
+  height = window.innerHeight;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  strands.length = 0;
+  const count = Math.floor(width / spacing);
+  const start = (width - count * spacing) / 2 + spacing / 2;
+  for (let column = 0; column <= count; column += 1) {
+const x = start + column * spacing + (Math.random() * 8 - 4);
+const length = 9 + Math.floor(Math.random() * 5);
+const points = [];
+for (let i = 0; i <= length; i += 1) {
+  points.push(point(x + (Math.random() * 3 - 1.5) * Math.min(i, 3), i * 42, i === 0));
+}
+strands.push({ points, phase: Math.random() * Math.PI * 2 });
+  }
+}
+
+function influencers() {
+  const active = [];
+  if (pointer) active.push({ x: pointer.x, y: pointer.y, vx: pointer.x - (previousPointer ? previousPointer.x : pointer.x), vy: pointer.y - (previousPointer ? previousPointer.y : pointer.y) });
+  return active;
+}
+
+function simulate() {
+  const active = influencers();
+  const time = performance.now() * 0.001;
+  strands.forEach(strand => {
+const points = strand.points;
+points.forEach((p, i) => {
+  if (p.pinned) {
+    p.x = p.baseX;
+    p.y = p.baseY;
+    p.oldX = p.x;
+    p.oldY = p.y;
+    return;
+  }
+  const depth = i / (points.length - 1);
+  const vx = (p.x - p.oldX) * 0.912;
+  const vy = Math.max((p.y - p.oldY) * 0.912, -2.15 * (1 - depth * 0.34));
+  p.oldX = p.x;
+  p.oldY = p.y;
+  p.x += vx + Math.sin(time + strand.phase + i * 0.37) * 0.003 * depth * depth;
+  p.y += vy + 0.125 + 0.115 * depth * depth;
+  p.x += (p.baseX - p.x) * 0.026 * (1 - depth * 0.62);
+  p.x += p.wakeX * (0.35 + depth * 0.75);
+  p.wakeX *= 0.915;
+  active.forEach(inf => {
+    const dx = p.x - inf.x;
+    const dy = p.y - inf.y;
+    const falloff = Math.max(0, 1 - Math.hypot(dx / 126, dy / 66));
+    if (falloff > 0) {
+      p.x += inf.vx * falloff * 0.43;
+      p.wakeX = Math.max(-10.5, Math.min(10.5, p.wakeX + inf.vx * falloff * 0.085));
+    }
+  });
+  p.x = Math.max(-80, Math.min(width + 80, p.x));
+  p.y = Math.min(height + 140, p.y);
+});
+for (let pass = 0; pass < 3; pass += 1) {
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const a = points[i];
+    const b = points[i + 1];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const distance = Math.hypot(dx, dy) || 0.001;
+    const correction = (distance - 42) / distance;
+    const stiffness = 0.82 + (0.46 - 0.82) * (i / (points.length - 2));
+    if (!a.pinned) { a.x += dx * correction * stiffness * 0.5; a.y += dy * correction * stiffness * 0.5; }
+    if (!b.pinned) { b.x -= dx * correction * stiffness * 0.5; b.y -= dy * correction * stiffness * 0.5; }
+  }
+}
+  });
+}
+
+function draw() {
+  ctx.clearRect(0, 0, width, height);
+  ctx.font = '800 16px "Courier New", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  strands.forEach(strand => {
+const points = strand.points;
+ctx.beginPath();
+ctx.moveTo(points[0].x, points[0].y);
+points.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+ctx.lineWidth = 1.7;
+ctx.stroke();
+points.forEach((p, i) => {
+  const previous = points[Math.max(0, i - 1)];
+  const next = points[Math.min(points.length - 1, i + 1)];
+  p.rotation += (Math.atan2(next.y - previous.y, next.x - previous.x) - Math.PI / 2 - p.rotation) * 0.08;
+  if ((frame + i + Math.floor(p.baseX)) % 2 === 0 && Math.random() < 0.055) p.char = randomChar();
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.rotation);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fillText(p.char, 0, 0);
+  ctx.restore();
+});
+  });
+}
+
+function loop() {
+  simulate();
+  draw();
+  frame += 1;
+  previousPointer = pointer ? { ...pointer } : null;
+  requestAnimationFrame(loop);
+}
+
+async function startCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+statusEl.textContent = 'move your mouse or finger';
+return;
+  }
+  try {
+const stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30 } }, audio: false });
+video.srcObject = stream;
+statusEl.textContent = 'camera ready - move your hand';
+statusEl.classList.add('active');
+if (typeof Hands !== 'undefined') {
+  handsInstance = new Hands({ locateFile: file => 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/' + file });
+  handsInstance.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.55, minTrackingConfidence: 0.55 });
+  handsInstance.onResults(results => {
+    const landmarks = results.multiHandLandmarks || [];
+    if (landmarks[0] && landmarks[0][8]) {
+      const tip = landmarks[0][8];
+      pointer = { x: (1 - tip.x) * width, y: tip.y * height };
+      statusEl.textContent = 'tracking ' + landmarks.length + ' hand' + (landmarks.length > 1 ? 's' : '');
+    }
+  });
+  const process = async now => {
+    if (!sendingFrame && now - lastHandsFrame > 55 && video.readyState >= 2) {
+      sendingFrame = true;
+      lastHandsFrame = now;
+      try { await handsInstance.send({ image: video }); } finally { sendingFrame = false; }
+    }
+    requestAnimationFrame(process);
+  };
+  requestAnimationFrame(process);
+}
+  } catch (error) {
+statusEl.textContent = 'camera unavailable - use your mouse';
+  }
+}
+
+canvas.addEventListener('mousemove', event => { pointer = { x: event.clientX, y: event.clientY }; });
+canvas.addEventListener('mouseleave', () => { pointer = null; });
+canvas.addEventListener('touchmove', event => {
+  const touch = event.touches[0];
+  if (touch) pointer = { x: touch.clientX, y: touch.clientY };
+}, { passive: true });
+canvas.addEventListener('touchend', () => { pointer = null; });
+window.addEventListener('resize', init);
+init();
+startCamera();
+loop();`
   }
 ];
